@@ -105,7 +105,7 @@ public class GraphDatabase {
     }
 
 
-    public long insertrecords(String tableName, String timeStamp, float x, float y, float z) {
+    public long putData(String tableName, String timeStamp, float x, float y, float z) {
         ContentValues initial = new ContentValues();
         initial.put(TIMESTAMP, timeStamp);
         initial.put(X, x);

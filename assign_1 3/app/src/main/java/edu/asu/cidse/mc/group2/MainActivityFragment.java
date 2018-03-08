@@ -84,16 +84,38 @@ public class MainActivityFragment extends Fragment {
              *
              */
             public void onClick(View view) {
-                String patientId = ((EditText)rootView.findViewById(R.id.editText)).toString();
-                String age = ((EditText)rootView.findViewById(R.id.editText4)).toString();
-                String name = ((EditText)rootView.findViewById(R.id.editText2)).toString();
+                EditText id = ((EditText) rootView.findViewById(R.id.editText));
+                String patientId = id.getText().toString();
+
+                EditText Age = ((EditText) rootView.findViewById(R.id.editText4));
+                String age = Age.getText().toString();
+
+                EditText Name = ((EditText) rootView.findViewById(R.id.editText2));
+                String name = Name.getText().toString();
 
                 RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
                 int selectedId = rg.getCheckedRadioButtonId();
                 RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
                 String sex = radioButton.getText().toString();
+                boolean isValidInput = true;
 
-                if (updateThread == null || !updateThread.isAlive()) {
+                if (patientId.length() == 0) {
+                    id.setError("Id is required!");
+                    isValidInput = false;
+                }
+
+                if (age.length() == 0) {
+
+                    Age.setError("Age is required!");
+                    isValidInput = false;
+                }
+
+                if (name.length() == 0)
+                {         Name.setError("Name is required!");
+                isValidInput = false;
+                }
+
+                if (isValidInput && (updateThread == null || !updateThread.isAlive())) {
                     updateThread =new UpdateThread(graphView, valList);
                     updateThread.start();
                     graphView.setVisibility(View.VISIBLE);
