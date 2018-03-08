@@ -1,5 +1,6 @@
 package edu.asu.cidse.mc.group2;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -77,6 +78,14 @@ public class MainActivityFragment extends Fragment {
                     updateThread =new UpdateThread(graphView, valList);
                     updateThread.start();
                     graphView.setVisibility(View.VISIBLE);
+
+                    Intent startSenseService = new Intent(getContext(), SensorHandlerClass.class);
+                    Bundle b = new Bundle();
+
+                    //b.putString("phone", phoneNum);
+                    startSenseService.putExtras(b);
+                    getActivity().startService(startSenseService);
+
                 }
             }
         });
@@ -117,7 +126,6 @@ public class MainActivityFragment extends Fragment {
             this.graphView = graphView;
             this.values = values;
             random = new Random();
-
         }
 
         // Returns the state of the values generated so far.
