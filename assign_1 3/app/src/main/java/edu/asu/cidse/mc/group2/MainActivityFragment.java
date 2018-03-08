@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
 import java.util.LinkedList;
@@ -33,10 +36,15 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
+    private String getTableName(String patientId, String age, String name, String sex)
+    {
+        return name+"_"+patientId+"_"+age+"_"+sex;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView =  inflater.inflate(R.layout.fragment_main, container, false);
+        final View rootView =  inflater.inflate(R.layout.fragment_main, container, false);
 
 
         float[] values = new float[10];
@@ -64,6 +72,8 @@ public class MainActivityFragment extends Fragment {
         Button runButton = rootView.findViewById(R.id.runBtn);
         Button stopButton = rootView.findViewById(R.id.stopBtn);
 
+
+
         // OnClickListener for the run button click
         runButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +83,15 @@ public class MainActivityFragment extends Fragment {
              *
              */
             public void onClick(View view) {
+                String patientId = ((EditText)rootView.findViewById(R.id.editText)).toString();
+                String age = ((EditText)rootView.findViewById(R.id.editText4)).toString();
+                String name = ((EditText)rootView.findViewById(R.id.editText2)).toString();
+
+                RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
+                int selectedId = rg.getCheckedRadioButtonId();
+                RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
+                String sex = radioButton.getText().toString();
+
                 if (updateThread == null || !updateThread.isAlive()) {
                     updateThread =new UpdateThread(graphView, valList);
                     updateThread.start();
