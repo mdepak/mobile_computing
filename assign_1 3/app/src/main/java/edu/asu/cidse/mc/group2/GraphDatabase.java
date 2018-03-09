@@ -20,15 +20,15 @@ public class GraphDatabase {
     public static final String Z = "z";
 
     public static final String COMPONENT_NAME = "ASSIGNMENT_DATABASE";
-    public final String TASKDATE = "taskDate";
 
     public static final String DBNAME = "group2";
     public static final int version = 1;
+    public static String create_query = "";
 
 
-    private String getCreateQuery(String tableName)
+    private void updateCreateQuery(String tableName)
     {
-        return "create table if not exists " +tableName+ " (time INTEGER primary key, x REAL, y REAL, z REAL);";
+        create_query =  "create table if not exists " +tableName+ " (time INTEGER primary key, x REAL, y REAL, z REAL);";
     }
 
     private final Context context;
@@ -40,7 +40,9 @@ public class GraphDatabase {
     {
         this.context = ctx;
         //DBHelper = new DatabaseHelper(context);
-        DBHelper = AssignmentDatabaseHelper.getInstance(context, tableName);
+        updateCreateQuery(tableName);
+        DBHelper = AssignmentDatabaseHelper.getInstance(context);
+
     }
 
     private static class AssignmentDatabaseHelper extends SQLiteOpenHelper {
@@ -48,7 +50,7 @@ public class GraphDatabase {
         private static AssignmentDatabaseHelper sInstance;
         private static String tableName = null;
 
-        public static synchronized AssignmentDatabaseHelper getInstance(Context context, String tableName) {
+        public static synchronized AssignmentDatabaseHelper getInstance(Context context) {
 
             // Use the application context, which will ensure that you
             // don't accidentally leak an Activity's context.
@@ -69,8 +71,7 @@ public class GraphDatabase {
         @Override
         public void onCreate(SQLiteDatabase db) {
             try {
-                String create_sql = "";
-                db.execSQL(create_sql);
+                db.execSQL(GraphDatabase.create_query);
 
                 Log.d(COMPONENT_NAME, "table created");
             } catch (SQLException e) {
@@ -105,7 +106,7 @@ public class GraphDatabase {
     }
 
 
-    public long insertrecords(String tableName, String timeStamp, float x, float y, float z) {
+    public long insertrecords(String tableName, long timeStamp, float x, float y, float z) {
         ContentValues initial = new ContentValues();
         initial.put(TIMESTAMP, timeStamp);
         initial.put(X, x);

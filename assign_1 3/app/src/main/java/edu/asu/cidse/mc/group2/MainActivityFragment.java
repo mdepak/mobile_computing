@@ -1,9 +1,14 @@
 package edu.asu.cidse.mc.group2;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,30 +27,36 @@ import java.util.Random;
  */
 public class MainActivityFragment extends Fragment {
 
+
+    private static final String TAG = "MainActivityFragment";
     // View for the graph showing data
 
     private GraphView graphView;
     UpdateThread updateThread;
     Queue<Float> valList;
 
+    public static final String TABLE_NAME = "table_name";
+
     // Horizontal axis values
-    String[] horAxis= {"2700","2750","2800","2850","2900","2950","3000","3150","3200"};
+    String[] horAxis = {"2700", "2750", "2800", "2850", "2900", "2950", "3000", "3150", "3200"};
 
     // Vertical axis values
-    String[] verAxis = {"500", "1000", "1500","2000"};
+    String[] verAxis = {"500", "1000", "1500", "2000"};
 
     public MainActivityFragment() {
     }
 
-    private String getTableName(String patientId, String age, String name, String sex)
-    {
-        return name+"_"+patientId+"_"+age+"_"+sex;
+    private String getTableName(String patientId, String age, String name, String sex) {
+        return name + "_" + patientId + "_" + age + "_" + sex;
     }
+
+    BroadcastReceiver receiver;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView =  inflater.inflate(R.layout.fragment_main, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
         float[] values = new float[10];
@@ -62,7 +73,7 @@ public class MainActivityFragment extends Fragment {
         RelativeLayout rootLayout = rootView.findViewById(R.id.rel_layout);
 
         // Initialize view in the onCreate and add to the layout
-        graphView = new GraphView(getContext(), values, "ECG readings",horAxis , verAxis, true);
+        graphView = new GraphView(getContext(), values, "ECG readings", horAxis, verAxis, true);
         updateThread = new UpdateThread(graphView, valList);
         graphView.setBackgroundColor(Color.BLACK);
         graphView.setVisibility(View.INVISIBLE);
@@ -74,6 +85,15 @@ public class MainActivityFragment extends Fragment {
         Button stopButton = rootView.findViewById(R.id.stopBtn);
 
 
+        receiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "Recieved broadcast message ");
+            }
+        };
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, new IntentFilter(SensorHandlerClass.INTENT_FILTER));
 
         // OnClickListener for the run button click
         runButton.setOnClickListener(new View.OnClickListener() {
@@ -84,33 +104,35 @@ public class MainActivityFragment extends Fragment {
              *
              */
             public void onClick(View view) {
-                String patientId = ((EditText)rootView.findViewById(R.id.editText)).toString();
-                String age = ((EditText)rootView.findViewById(R.id.editText4)).toString();
-                String name = ((EditText)rootView.findViewById(R.id.editText2)).toString();
+                String patientId = ((EditText) rootView.findViewById(R.id.editText)).getText().toString();
+                String age = ((EditText) rootView.findViewById(R.id.editText4)).getText().toString();
+                String name = ((EditText) rootView.findViewById(R.id.editText2)).getText().toString();
 
                 RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
                 int selectedId = rg.getCheckedRadioButtonId();
                 RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
                 String sex = radioButton.getText().toString();
 
+
+                String tableName = getTableName(patientId, age, name, sex);
+
+
                 if (updateThread == null || !updateThread.isAlive()) {
-                    updateThread =new UpdateThread(graphView, valList);
+                    updateThread = new UpdateThread(graphView, valList);
                     updateThread.start();
                     graphView.setVisibility(View.VISIBLE);
 
                     Intent startSenseService = new Intent(getContext(), SensorHandlerClass.class);
                     Bundle b = new Bundle();
-
-                    //b.putString("phone", phoneNum);
+                    b.putString(TABLE_NAME, tableName);
                     startSenseService.putExtras(b);
                     getActivity().startService(startSenseService);
-
                 }
             }
         });
 
         // OnClickListener for the Stop button click
-        stopButton.setOnClickListener(new View.OnClickListener(){
+        stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             /**
              *  Handles the stop button click
@@ -130,6 +152,12 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiver);
+    }
 
     /**
      * Thread for updating the random values in the GraphView
