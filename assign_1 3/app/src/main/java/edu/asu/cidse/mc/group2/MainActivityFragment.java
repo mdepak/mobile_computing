@@ -13,6 +13,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -62,12 +65,22 @@ public class MainActivityFragment extends Fragment {
         RelativeLayout rootLayout = rootView.findViewById(R.id.rel_layout);
 
         // Initialize view in the onCreate and add to the layout
-        graphView = new GraphView(getContext(), values, "ECG readings",horAxis , verAxis, true);
-        updateThread = new UpdateThread(graphView, valList);
-        graphView.setBackgroundColor(Color.BLACK);
-        graphView.setVisibility(View.INVISIBLE);
+        //graphView = new GraphView(getContext(), values, "ECG readings",horAxis , verAxis, true, -65281);
+        //updateThread = new UpdateThread(graphView, valList);
+        //graphView.setBackgroundColor(Color.BLACK);
+        //graphView.setVisibility(View.INVISIBLE);
 
-        rootLayout.addView(graphView);
+        com.jjoe64.graphview.GraphView graph = (com.jjoe64.graphview.GraphView) rootView.findViewById(R.id.graph);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
+        });
+        graph.addSeries(series);
+
+        //rootLayout.addView(graphView);
 
 
         Button runButton = rootView.findViewById(R.id.runBtn);
