@@ -58,7 +58,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
 
             //Insert the record to the database
             if(graphDatabase!= null) {
-                graphDatabase.insertrecords(tableName, time, accX, accY, accZ);
+               // graphDatabase.insertrecords(tableName, time, accX, accY, accZ);
                 Log.d(TAG, "Insertion done...");
 
                 //Send broadcast to the fragment for updating UI
@@ -90,7 +90,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //b = intent.getExtras();
+        b = intent.getExtras();
         //String phoneNumber = b.getString("phone");
         //Toast.makeText(SensorHandlerClass.this, phoneNumber, Toast.LENGTH_LONG).show();
         // We want this service to continue running until it is explicitly
