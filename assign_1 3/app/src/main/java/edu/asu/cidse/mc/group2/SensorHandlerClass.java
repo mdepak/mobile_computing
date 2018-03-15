@@ -64,6 +64,8 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
                 //Send broadcast to the fragment for updating UI
                 Intent updateUI = new Intent(INTENT_FILTER);
 
+                updateUI.addCategory(Intent.CATEGORY_DEFAULT);
+
                 Bundle bundle = new Bundle();
                 bundle.putFloat(ACC_X, accX);
                 bundle.putFloat(ACC_Y, accY);

@@ -164,7 +164,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/runBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/runBtn" >
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:id="@+id/graph" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textView2"
