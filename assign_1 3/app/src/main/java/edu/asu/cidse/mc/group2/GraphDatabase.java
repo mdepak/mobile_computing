@@ -10,7 +10,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
 
 public class GraphDatabase {
 
@@ -21,7 +24,7 @@ public class GraphDatabase {
 
     public static final String COMPONENT_NAME = "ASSIGNMENT_DATABASE";
 
-    public static final String DBNAME = "group2";
+    public static final String DBNAME = "group_2.db";
     public static final int version = 1;
     public static String create_query = "";
 
@@ -63,7 +66,10 @@ public class GraphDatabase {
 
         AssignmentDatabaseHelper(Context ctx) {
 
-            super(ctx, DBNAME, null, version);
+            super(ctx, Environment.getExternalStorageDirectory()
+                    + File.separator + "Android/Data/CSE535_ASSIGNMENT2"
+                    + File.separator + DBNAME, null, version);
+            //super(ctx, DBNAME, null, version);
         }
 
 

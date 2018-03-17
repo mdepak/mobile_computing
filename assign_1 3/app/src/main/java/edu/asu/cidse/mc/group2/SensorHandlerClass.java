@@ -3,9 +3,8 @@ package edu.asu.cidse.mc.group2;
 /**
  * Created by jlee375 on 2016-02-03.
  */
-import android.app.IntentService;
+
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -14,9 +13,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.method.DateTimeKeyListener;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.Date;
 
@@ -27,7 +25,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     private SensorManager accelManage;
     private Sensor senseAccel;
     int index = 0;
-    int k=0;
+    int k = 0;
     Bundle b;
     GraphDatabase graphDatabase;
     String tableName;
@@ -38,7 +36,12 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     public static final String ACC_Y = "y";
     public static final String ACC_Z = "z";
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "Service stopping..onDestroy() called...");
+        accelManage.unregisterListener(this);
+    }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -54,17 +57,17 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
 
             long time = new Date().getTime();
 
-            Log.d(TAG, "Time"+ time+ "\t acc X"+ accX+"\tacc Y"+ accY +"\t acc Z"+ accZ);
+            Log.d(TAG, "Time" + time + "\t acc X" + accX + "\tacc Y" + accY + "\t acc Z" + accZ);
 
             //Insert the record to the database
-            if(graphDatabase!= null) {
-               // graphDatabase.insertrecords(tableName, time, accX, accY, accZ);
+            if (graphDatabase != null) {
+                // graphDatabase.insertrecords(tableName, time, accX, accY, accZ);
                 Log.d(TAG, "Insertion done...");
 
                 //Send broadcast to the fragment for updating UI
                 Intent updateUI = new Intent(INTENT_FILTER);
 
-                updateUI.addCategory(Intent.CATEGORY_DEFAULT);
+                //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
 
                 Bundle bundle = new Bundle();
                 bundle.putFloat(ACC_X, accX);
@@ -72,7 +75,9 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
                 bundle.putFloat(ACC_Z, accZ);
 
                 updateUI.putExtras(bundle);
-                sendBroadcast(updateUI);
+                //sendBroadcast(updateUI);
+                //sendBroadcast(updateUI);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
             }
         }
     }
@@ -84,10 +89,12 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     }
 
     @Override
-    public void onCreate(){
+    public void onCreate() {
         accelManage = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senseAccel = accelManage.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        accelManage.registerListener(this, senseAccel, 1000000);
+        accelManage.registerListener(this, senseAccel, SensorManager.SENSOR_DELAY_NORMAL);
+
+
     }
 
     @Override
@@ -98,7 +105,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         //k = 0;
-        if(b!=null) {
+        if (b != null) {
             b = intent.getExtras();
             tableName = b.getString(TABLE_NAME);
 
@@ -115,5 +122,4 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
         // TODO Auto-generated method stub
         return null;
     }
-
 }
