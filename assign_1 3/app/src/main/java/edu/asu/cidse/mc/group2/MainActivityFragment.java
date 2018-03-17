@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.http.AndroidHttpClient;
+import android.net.http.HttpsConnection;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,14 +22,34 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.android.internal.http.multipart.MultipartEntity;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+
+import static edu.asu.cidse.mc.group2.GraphDatabase.DBNAME;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -141,12 +165,19 @@ public class MainActivityFragment extends Fragment {
         Button downloadButton = rootView.findViewById(R.id.downloadBtn);
         Button uploadButton = rootView.findViewById(R.id.uploadBtn);
 
-
+        // OnClickListener for the download button
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                String url =  "http://impact.asu.edu/CSE535Spring18Folder/";
 
+            }
+        });
+        // OnClickListener for the upload button
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                new Upload_File().execute();
+                System.out.print("Uploaded..!");
             }
         });
 
@@ -231,12 +262,90 @@ public class MainActivityFragment extends Fragment {
     }
 
 
+    private class Upload_File extends AsyncTask<Void, Void, String> {
+        protected String doInBackground(Void... unsued) {
+            try
+            {
+                HttpClient client = new DefaultHttpClient();
+                HttpPost post = new HttpPost("http://impact.asu.edu/CSE535Spring18Folder");
+
+                MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+                entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+                File f = new File(Environment.getExternalStorageDirectory() +
+                        File.separator + "Android/Data/CSE535_ASSIGNMENT2" +
+                        File.separator + DBNAME);
+
+                if(f != null)
+                {
+                    entityBuilder.addPart("uploaded_file", new FileBody(f));
+                }
+
+                HttpEntity entity = entityBuilder.build();
+                post.setEntity(entity);
+                HttpResponse response = client.execute(post);
+                HttpEntity httpEntity = response.getEntity();
+                String result = EntityUtils.toString(httpEntity);
+                Log.v("result", result);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            /*File f = new File(Environment.getExternalStorageDirectory() +
+                    File.separator + "Android/Data/CSE535_ASSIGNMENT2" +
+                    File.separator + DBNAME);
+            try {
+                byte[] bytearray = org.apache.commons.io.FileUtils.readFileToByteArray(f);
+                HttpPost httpPost = new HttpPost("http://impact.asu.edu/CSE535Spring18Folder");
+                HttpClient httpclient = new DefaultHttpClient();
+                httpPost.setEntity(new ByteArrayEntity(bytearray));
+                HttpResponse response = httpclient.execute(httpPost);
+                StringBuilder sbr = new StringBuilder(response.getStatusLine().getStatusCode());
+                Log.d(TAG,sbr.toString());
+                Log.d(TAG,"Uploaded");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
+
+            /*String url = "http://impact.asu.edu/CSE535Spring18Folder";
+            //Environment.getExternalStorageDirectory().getAbsolutePath(),
+
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpPost httppost = new HttpPost(url);
+
+                InputStreamEntity reqEntity = new InputStreamEntity(
+                        new FileInputStream(file), -1);
+                reqEntity.setContentType("binary/octet-stream");
+                reqEntity.setChunked(true); // Send in multiple parts if needed
+                httppost.setEntity(reqEntity);
+                HttpResponse response = httpclient.execute(httppost);
+                //Do something with response...
+                StringBuilder sbr = new StringBuilder(response.getStatusLine().getStatusCode());
+                Log.d(TAG,sbr.toString());
+                Log.d(TAG,"Uploaded");
+
+            } catch (Exception e) {
+                // show error
+                e.printStackTrace();
+            }*/
+
+                return null;
+
+
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         //getContext().unregisterReceiver(receiver);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
     }
+
 
     /**
      * Thread for updating the random values in the GraphView
