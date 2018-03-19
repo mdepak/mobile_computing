@@ -195,7 +195,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43">
+        app:layout_constraintVertical_bias="0.381">
 
         <RadioButton
             android:id="@+id/sex_male"
@@ -222,9 +222,10 @@
         android:text="Sex"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/radioGroup"
+        app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.41000003" />
+        app:layout_constraintVertical_bias="0.371" />
 
 
 </android.support.constraint.ConstraintLayout>
