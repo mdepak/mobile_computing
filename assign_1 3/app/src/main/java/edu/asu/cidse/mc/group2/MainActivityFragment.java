@@ -4,13 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.net.http.AndroidHttpClient;
-import android.net.http.HttpsConnection;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,39 +20,43 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-import com.android.internal.http.multipart.MultipartEntity;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Path;
+import retrofit2.http.Streaming;
+
 import static edu.asu.cidse.mc.group2.GraphDatabase.DBNAME;
 
 /**
- * A placeholder fragment containing a simple view.
- */
+ * A placeholder fragment containing a simple view. *
+ **/
 public class MainActivityFragment extends Fragment {
 
 
@@ -69,6 +72,8 @@ public class MainActivityFragment extends Fragment {
 
     public int value = 0;
 
+    String table_name = null;
+
     public static final String TABLE_NAME = "table_name";
 
     // Horizontal axis values
@@ -76,6 +81,28 @@ public class MainActivityFragment extends Fragment {
 
     // Vertical axis values
     String[] verAxis = {"500", "1000", "1500", "2000"};
+
+    String path = Environment.getExternalStorageDirectory() +
+            File.separator + "Android/Data/CSE535_ASSIGNMENT2" +
+            File.separator + DBNAME;
+
+
+    String url = "http://impact.asu.edu/";
+
+    // We have used the Android GraphView Library - Added using Gradle.
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(url).build();
+
+    Api api = retrofit.create(Api.class);
+
+
+    private void resetGraph()
+    {
+        xSeries.resetData(new DataPoint[]{});
+        ySeries.resetData(new DataPoint[]{});
+        zSeries.resetData(new DataPoint[]{});
+    }
 
     public MainActivityFragment() {
     }
@@ -169,15 +196,95 @@ public class MainActivityFragment extends Fragment {
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               String url =  "http://impact.asu.edu/CSE535Spring18Folder/";
 
+                Call<ResponseBody> call = api.downloadFile("group_2.db");
+
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                        Toast.makeText(getContext(), response.raw().toString(), Toast.LENGTH_SHORT).show();
+                        boolean write = writeResponseBodyToDisk(response.body());
+
+                        EditText id = ((EditText) rootView.findViewById(R.id.editText));
+                        String patientId = id.getText().toString();
+
+                        EditText Age = ((EditText) rootView.findViewById(R.id.editText4));
+                        String age = Age.getText().toString();
+
+                        EditText Name = ((EditText) rootView.findViewById(R.id.editText2));
+                        String name = Name.getText().toString();
+
+                        RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
+                        int selectedId = rg.getCheckedRadioButtonId();
+                        RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
+                        String sex = radioButton.getText().toString();
+                        boolean isValidInput = true;
+
+                        if (patientId.length() == 0) {
+                            id.setError("Id is required!");
+                            isValidInput = false;
+                        }
+
+                        if (age.length() == 0) {
+                            Age.setError("Age is required!");
+                            isValidInput = false;
+                        }
+
+                        if (name.length() == 0) {
+                            Name.setError("Name is required!");
+                            isValidInput = false;
+                        }
+
+                        String tableName = getTableName(patientId, age, name, sex);
+                        table_name = tableName;
+                        if(isValidInput) {
+                                fetchRecordsFromDataBase(table_name);
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(getContext(), "Download failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         // OnClickListener for the upload button
         uploadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new Upload_File().execute();
-                System.out.print("Uploaded..!");
+                File file = new File(path);
+
+                if(file.exists())
+                    Log.d(TAG, "File found in the SD card..");
+                else
+                    Log.d(TAG, "File not found in the SD card..");
+
+
+                HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+                logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+                httpClient.addInterceptor(logging);
+
+                RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+                MultipartBody.Part body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
+                String tableName = "tableName";
+                RequestBody descBody = RequestBody.create(MediaType.parse("text/plain"), tableName);
+
+                Call<ResponseBody> call = api.uploadFile(body,descBody);
+
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, retrofit2.Response response) {
+                        Toast.makeText(getContext(), response.raw().toString(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        Toast.makeText(getContext(), "Upload Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -221,7 +328,7 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 String tableName = getTableName(patientId, age, name, sex);
-
+                table_name = tableName;
 
                 if (isValidInput && (updateThread == null || !updateThread.isAlive())) {
                     updateThread = new UpdateThread(graphView, valList);
@@ -236,6 +343,10 @@ public class MainActivityFragment extends Fragment {
                 }
             }
         });
+
+
+
+
 
         // OnClickListener for the Stop button click
         stopButton.setOnClickListener(new View.OnClickListener() {
@@ -261,83 +372,96 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+    private void fetchRecordsFromDataBase(String tableName)
+    {
+        GraphDatabase graphDatabase = new GraphDatabase(getContext(), tableName);
+        graphDatabase.open();
+        Cursor cursor = graphDatabase.getData(tableName);
 
-    private class Upload_File extends AsyncTask<Void, Void, String> {
-        protected String doInBackground(Void... unsued) {
-            try
-            {
-                HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost("http://impact.asu.edu/CSE535Spring18Folder");
+        if (cursor != null)
+        {while (cursor.moveToNext()) {
+           float x =  cursor.getFloat(cursor.getColumnIndex(GraphDatabase.X));
+            float y = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Y));
+            float z = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Z));
 
-                MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-                entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            graphView.setVisibility(View.VISIBLE);
+            updateGraph(x, y, z);
 
-                File f = new File(Environment.getExternalStorageDirectory() +
-                        File.separator + "Android/Data/CSE535_ASSIGNMENT2" +
-                        File.separator + DBNAME);
+            Log.d(TAG, "Values from db : "+ x + "\t" + y+ "\t"+z);
+        }
+        }
+        else
+        {
+            resetGraph();
+        }
+        graphDatabase.close();
+    }
 
-                if(f != null)
-                {
-                    entityBuilder.addPart("uploaded_file", new FileBody(f));
+
+
+
+
+    private boolean writeResponseBodyToDisk(ResponseBody body) {
+        try {
+            // todo change the file location/name according to your needs
+            File futureStudioIconFile = new File(path);
+
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+
+            try {
+                byte[] fileReader = new byte[4096];
+
+                long fileSize = body.contentLength();
+                long fileSizeDownloaded = 0;
+
+                inputStream = body.byteStream();
+                outputStream = new FileOutputStream(futureStudioIconFile);
+
+                while (true) {
+                    int read = inputStream.read(fileReader);
+
+                    if (read == -1) {
+                        break;
+                    }
+
+                    outputStream.write(fileReader, 0, read);
+
+                    fileSizeDownloaded += read;
+
+                    Log.d("Down Error", "file download: " + fileSizeDownloaded + " of " + fileSize);
                 }
 
-                HttpEntity entity = entityBuilder.build();
-                post.setEntity(entity);
-                HttpResponse response = client.execute(post);
-                HttpEntity httpEntity = response.getEntity();
-                String result = EntityUtils.toString(httpEntity);
-                Log.v("result", result);
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-            /*File f = new File(Environment.getExternalStorageDirectory() +
-                    File.separator + "Android/Data/CSE535_ASSIGNMENT2" +
-                    File.separator + DBNAME);
-            try {
-                byte[] bytearray = org.apache.commons.io.FileUtils.readFileToByteArray(f);
-                HttpPost httpPost = new HttpPost("http://impact.asu.edu/CSE535Spring18Folder");
-                HttpClient httpclient = new DefaultHttpClient();
-                httpPost.setEntity(new ByteArrayEntity(bytearray));
-                HttpResponse response = httpclient.execute(httpPost);
-                StringBuilder sbr = new StringBuilder(response.getStatusLine().getStatusCode());
-                Log.d(TAG,sbr.toString());
-                Log.d(TAG,"Uploaded");
+                outputStream.flush();
+
+                return true;
             } catch (IOException e) {
-                e.printStackTrace();
-            }*/
+                return false;
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
 
-
-            /*String url = "http://impact.asu.edu/CSE535Spring18Folder";
-            //Environment.getExternalStorageDirectory().getAbsolutePath(),
-
-            try {
-                HttpClient httpclient = new DefaultHttpClient();
-
-                HttpPost httppost = new HttpPost(url);
-
-                InputStreamEntity reqEntity = new InputStreamEntity(
-                        new FileInputStream(file), -1);
-                reqEntity.setContentType("binary/octet-stream");
-                reqEntity.setChunked(true); // Send in multiple parts if needed
-                httppost.setEntity(reqEntity);
-                HttpResponse response = httpclient.execute(httppost);
-                //Do something with response...
-                StringBuilder sbr = new StringBuilder(response.getStatusLine().getStatusCode());
-                Log.d(TAG,sbr.toString());
-                Log.d(TAG,"Uploaded");
-
-            } catch (Exception e) {
-                // show error
-                e.printStackTrace();
-            }*/
-
-                return null;
-
-
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+        } catch (IOException e) {
+            return false;
         }
     }
+
+
+    public interface  Api{
+        @Multipart
+        @POST("CSE535Spring18Folder/UploadToServer.php")
+        Call<ResponseBody> uploadFile (@Part MultipartBody.Part file, @Part("desc") RequestBody desc);
+
+        @GET("CSE535Spring18Folder/{filename}")
+        Call<ResponseBody> downloadFile(@Path("filename") String filename);
+
+    }
+
 
     @Override
     public void onDestroy() {
@@ -396,7 +520,8 @@ public class MainActivityFragment extends Fragment {
                 try {
                     // Sleep between different updates of the view
                     sleep(1000);
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }

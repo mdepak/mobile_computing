@@ -111,6 +111,11 @@ public class GraphDatabase {
 
     }
 
+    public void createTableIfNotExists()
+    {
+        db.execSQL(create_query);
+    }
+
 
     public long insertrecords(String tableName, long timeStamp, float x, float y, float z) {
         ContentValues initial = new ContentValues();
@@ -125,7 +130,11 @@ public class GraphDatabase {
 
     public Cursor getData(String tableName)
     {
-        Cursor res = db.rawQuery("select * from "+ tableName +" order by time DESC limit 10",null);
+        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
+        Cursor res = null;
+        if(cursor.getCount()>0) {
+            res = db.rawQuery("select * from " + tableName + " order by time DESC limit 10", null);
+        }
         return res;
     }
 }

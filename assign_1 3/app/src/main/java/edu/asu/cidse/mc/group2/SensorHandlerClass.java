@@ -61,7 +61,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
 
             //Insert the record to the database
             if (graphDatabase != null) {
-                // graphDatabase.insertrecords(tableName, time, accX, accY, accZ);
+                graphDatabase.insertrecords(tableName, time, accX, accY, accZ);
                 Log.d(TAG, "Insertion done...");
 
                 //Send broadcast to the fragment for updating UI
@@ -105,12 +105,14 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         //k = 0;
+
         if (b != null) {
             b = intent.getExtras();
             tableName = b.getString(TABLE_NAME);
 
             graphDatabase = new GraphDatabase(this, tableName);
             graphDatabase.open();
+            graphDatabase.createTableIfNotExists();
             Log.d(TAG, "Service started....");
         }
 
