@@ -15,6 +15,8 @@ import android.util.Log;
 
 import java.io.File;
 
+import static edu.asu.cidse.mc.group2.MainActivityFragment.getExternalStorageDirectory;
+
 public class GraphDatabase {
 
     public static final String TIMESTAMP = "time";
@@ -66,7 +68,7 @@ public class GraphDatabase {
 
         AssignmentDatabaseHelper(Context ctx) {
 
-            super(ctx, Environment.getExternalStorageDirectory()
+            super(ctx, getExternalStorageDirectory()
                     + File.separator + "Android/Data/CSE535_ASSIGNMENT2"
                     + File.separator + DBNAME, null, version);
             //super(ctx, DBNAME, null, version);

@@ -74,6 +74,18 @@ public class MainActivityFragment extends Fragment {
 
     String table_name = null;
 
+    private static final File EXTERNAL_STORAGE_DIRECTORY
+            = getDirectory("EXTERNAL_STORAGE", "/sdcard");
+
+    static File getDirectory(String variableName, String defaultPath) {
+        String path = System.getenv(variableName);
+        return path == null ? new File(defaultPath) : new File(path);
+    }
+
+    public static File getExternalStorageDirectory() {
+        return EXTERNAL_STORAGE_DIRECTORY;
+    }
+
     public static final String TABLE_NAME = "table_name";
 
     // Horizontal axis values
@@ -82,7 +94,7 @@ public class MainActivityFragment extends Fragment {
     // Vertical axis values
     String[] verAxis = {"500", "1000", "1500", "2000"};
 
-    String path = Environment.getExternalStorageDirectory() +
+    String path = getExternalStorageDirectory() +
             File.separator + "Android/Data/CSE535_ASSIGNMENT2" +
             File.separator + DBNAME;
 
