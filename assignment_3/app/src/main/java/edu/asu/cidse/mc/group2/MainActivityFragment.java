@@ -209,7 +209,7 @@ public class MainActivityFragment extends Fragment {
         Button runButton = rootView.findViewById(R.id.runBtn);
         Button stopButton = rootView.findViewById(R.id.stopBtn);
         Button downloadButton = rootView.findViewById(R.id.downloadBtn);
-        Button uploadButton = rootView.findViewById(R.id.uploadBtn);
+        Button trainButton = rootView.findViewById(R.id.trainBtn);
 
         // OnClickListener for the download button
         downloadButton.setOnClickListener(new View.OnClickListener() {
@@ -271,40 +271,9 @@ public class MainActivityFragment extends Fragment {
             }
         });
         // OnClickListener for the upload button
-        uploadButton.setOnClickListener(new View.OnClickListener() {
+        trainButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                File file = new File(path);
-
-                if(file.exists())
-                    Log.d(TAG, "File found in the SD card..");
-                else
-                    Log.d(TAG, "File not found in the SD card..");
-
-
-                HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-                logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-                OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-                httpClient.addInterceptor(logging);
-
-                RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
-                MultipartBody.Part body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
-                String tableName = "tableName";
-                RequestBody descBody = RequestBody.create(MediaType.parse("text/plain"), tableName);
-
-                Call<ResponseBody> call = api.uploadFile(body,descBody);
-
-                call.enqueue(new Callback() {
-                    @Override
-                    public void onResponse(Call call, retrofit2.Response response) {
-                        Toast.makeText(getContext(), response.raw().toString(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(Call call, Throwable t) {
-                        Toast.makeText(getContext(), "Upload Failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                List<Sample> accsa = fetchRecordsForTraining("asdfasf");
             }
         });
 
@@ -416,7 +385,7 @@ public class MainActivityFragment extends Fragment {
                     AccSample accSample = new AccSample(x, y, z);
                     accSampleList.add(accSample);
                 }
-                Sample sample = new Sample(accSampleList, cursor.getColumnIndex("label"));
+                Sample sample = new Sample(accSampleList, cursor.getInt(cursor.getColumnIndex("label")));
                 sampleList.add(sample);
             }
         }

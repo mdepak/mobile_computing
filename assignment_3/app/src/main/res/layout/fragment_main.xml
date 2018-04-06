@@ -118,14 +118,14 @@
         app:layout_constraintVertical_bias="0.259" />
 
     <Button
-        android:id="@+id/uploadBtn"
+        android:id="@+id/trainBtn"
         android:layout_width="80dp"
         android:layout_height="40dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/holo_blue_light"
-        android:text="Upload"
+        android:text="Train"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -148,7 +148,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.485"
-        app:layout_constraintStart_toEndOf="@+id/uploadBtn"
+        app:layout_constraintStart_toEndOf="@+id/trainBtn"
         app:layout_constraintTop_toBottomOf="@+id/editText2"
         app:layout_constraintVertical_bias="0.259" />
 
@@ -191,9 +191,11 @@
         android:layout_width="fill_parent"
         android:layout_height="25dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView4"/>
+        app:layout_constraintBottom_toTopOf="@+id/trainBtn"
+        app:layout_constraintTop_toBottomOf="@+id/editText2"
+        tools:layout_editor_absoluteX="30dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/textView4"
@@ -203,7 +205,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Sex"
+        android:text="Activity"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
