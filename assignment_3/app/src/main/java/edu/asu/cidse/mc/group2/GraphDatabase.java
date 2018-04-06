@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.io.File;
+import java.util.List;
 
 import static edu.asu.cidse.mc.group2.MainActivityFragment.getExternalStorageDirectory;
 
@@ -34,7 +35,7 @@ public class GraphDatabase {
     {
         create_query =  "create table if not exists " +tableName+ " (id INTEGER primary key, ";
 
-        for(int i=1; i<=50; i++) create_query += " x"+i +" REAL, y"+i +" REAL, z"+i +" REAL,";
+        for(int i=0; i<50; i++) create_query += " x"+i +" REAL, y"+i +" REAL, z"+i +" REAL,";
 
         create_query += " label INTEGER);";
     }
@@ -122,13 +123,16 @@ public class GraphDatabase {
     }
 
 
-    public long insertrecords(String tableName, long timeStamp, float x, float y, float z) {
+    public long insertrecords(String tableName, List<AccSample> accSampleList, Integer label) {
         ContentValues initial = new ContentValues();
-        initial.put(TIMESTAMP, timeStamp);
-        initial.put(X, x);
-        initial.put(Y, y);
-        initial.put(Z, z);
 
+        for(int i=0; i<50; i++) {
+            initial.put("x"+i, accSampleList.get(i).accx);
+            initial.put("y"+i, accSampleList.get(i).accy);
+            initial.put("z"+i, accSampleList.get(i).accz);
+        }
+
+        initial.put("label", label);
         return db.insert(tableName, null, initial);
     }
 
