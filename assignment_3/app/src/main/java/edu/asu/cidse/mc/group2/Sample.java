@@ -7,7 +7,12 @@ import java.util.List;
  */
 
 public class Sample {
-    int id;
     List<AccSample> accSampleList;
     int label;
+
+    public Sample(List<AccSample> accSampleList, int label) {
+        this.accSampleList = accSampleList;
+        this.label = label;
+    }
 }
+

@@ -9,14 +9,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private Spinner spinner;
+    private static final String[] activityName = {"Walking", "Jumping", "Running"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        spinner = (Spinner)findViewById(R.id.spinner);
+        ArrayAdapter<String>adapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item,activityName);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (android.os.Build.VERSION.SDK_INT > 23) {
@@ -41,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

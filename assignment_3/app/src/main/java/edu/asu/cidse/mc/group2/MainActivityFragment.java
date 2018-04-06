@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
@@ -30,7 +31,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
@@ -84,6 +87,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     public static final String TABLE_NAME = "table_name";
+    public static final String LABEL = "label";
 
     // Horizontal axis values
     String[] horAxis = {"2700", "2750", "2800", "2850", "2900", "2950", "3000", "3150", "3200"};
@@ -146,10 +150,16 @@ public class MainActivityFragment extends Fragment {
                 float accX = bundle.getFloat(SensorHandlerClass.ACC_X);
                 float accY = bundle.getFloat(SensorHandlerClass.ACC_Y);
                 float accZ = bundle.getFloat(SensorHandlerClass.ACC_Z);
+                String str = bundle.getString(SensorHandlerClass.HIDE);
 
-                updateGraph(accX, accY, accZ);
+                if(str.equals("false")) {
+                    updateGraph(accX, accY, accZ);
+                    Log.d(TAG, "Recieved data in message " + accX);
+                }
+                else
+                    graphView.setVisibility(View.INVISIBLE);
 
-                Log.d(TAG, "Recieved data in message "+ accX);
+
             }
         };
 
@@ -223,10 +233,11 @@ public class MainActivityFragment extends Fragment {
                         EditText Name = ((EditText) rootView.findViewById(R.id.editText2));
                         String name = Name.getText().toString();
 
-                        RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
-                        int selectedId = rg.getCheckedRadioButtonId();
-                        RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
-                        String sex = radioButton.getText().toString();
+                        //RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
+                        //int selectedId = rg.getCheckedRadioButtonId();
+                        //RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
+                        //String sex = radioButton.getText().toString();
+                        String sex;
                         boolean isValidInput = true;
 
                         if (patientId.length() == 0) {
@@ -244,7 +255,7 @@ public class MainActivityFragment extends Fragment {
                             isValidInput = false;
                         }
 
-                        String tableName = getTableName(patientId, age, name, sex);
+                        String tableName = getTableName(patientId, age, name, "jkhagsdfkhj");
                         table_name = tableName;
                         if(isValidInput) {
                                 fetchRecordsFromDataBase(table_name);
@@ -315,10 +326,15 @@ public class MainActivityFragment extends Fragment {
                 EditText Name = ((EditText) rootView.findViewById(R.id.editText2));
                 String name = Name.getText().toString();
 
-                RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
-                int selectedId = rg.getCheckedRadioButtonId();
-                RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
-                String sex = radioButton.getText().toString();
+                //RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
+                //int selectedId = rg.getCheckedRadioButtonId();
+                //RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
+                String sex;
+                //= radioButton.getText().toString();
+
+                Spinner sp = (Spinner)rootView.findViewById(R.id.spinner);
+                int spinner_pos = sp.getSelectedItemPosition();
+                Log.d(TAG, "Value of the Spinner chosen : "+ spinner_pos);
                 boolean isValidInput = true;
 
                 if (patientId.length() == 0) {
@@ -336,7 +352,7 @@ public class MainActivityFragment extends Fragment {
                     isValidInput = false;
                 }
 
-                String tableName = getTableName(patientId, age, name, sex);
+                String tableName = getTableName(patientId, age, name, "sdfasdf");
                 table_name = tableName;
 
                 if (isValidInput && (updateThread == null || !updateThread.isAlive())) {
@@ -347,6 +363,7 @@ public class MainActivityFragment extends Fragment {
                     Intent sensorService = new Intent(getContext(), SensorHandlerClass.class);
                     Bundle b = new Bundle();
                     b.putString(TABLE_NAME, tableName);
+                    b.putInt(LABEL, spinner_pos);
                     sensorService.putExtras(b);
                     getActivity().startService(sensorService);
                 }
@@ -379,6 +396,32 @@ public class MainActivityFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private List<Sample> fetchRecordsForTraining(String tableName)
+    {
+
+        List<Sample> sampleList = new ArrayList<>();
+        GraphDatabase graphDatabase = new GraphDatabase(getContext(), tableName);
+        graphDatabase.open();
+        Cursor cursor = graphDatabase.getData(tableName);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                List<AccSample> accSampleList = new ArrayList<>();
+                for (int i = 0; i < 50; i++) {
+                    float x = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.X + i));
+                    float y = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Y + i));
+                    float z = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Z + i));
+                    AccSample accSample = new AccSample(x, y, z);
+                    accSampleList.add(accSample);
+                }
+                Sample sample = new Sample(accSampleList, cursor.getColumnIndex("label"));
+                sampleList.add(sample);
+            }
+        }
+        graphDatabase.close();
+        return sampleList;
     }
 
     private void fetchRecordsFromDataBase(String tableName)
@@ -526,13 +569,6 @@ public class MainActivityFragment extends Fragment {
                 //graphView.getSeries(i);
                 // Invalidate the view to render again
                 //graphView.postInvalidate();
-                try {
-                    // Sleep between different updates of the view
-                    sleep(1000);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }

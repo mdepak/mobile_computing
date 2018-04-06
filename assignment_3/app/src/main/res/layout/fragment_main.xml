@@ -185,31 +185,15 @@
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/editText2" />
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="25dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="152dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.381">
-
-        <RadioButton
-            android:id="@+id/sex_male"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Male" />
-
-        <RadioButton
-            android:id="@+id/sex_female"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Female" />
-    </RadioGroup>
+        app:layout_constraintBottom_toBottomOf="@+id/textView4"/>
 
     <TextView
         android:id="@+id/textView4"
@@ -221,7 +205,6 @@
         android:layout_marginTop="8dp"
         android:text="Sex"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/radioGroup"
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
