@@ -31,8 +31,9 @@ public class GraphDatabase {
     public static String create_query = "";
 
 
-    private void updateCreateQuery(String tableName)
-    {
+    private void updateCreateQuery(String tableName) {
+
+        tableName = "sampledata";
         create_query =  "create table if not exists " +tableName+ " (id INTEGER primary key, ";
 
         for(int i=0; i<50; i++) create_query += " x"+i +" REAL, y"+i +" REAL, z"+i +" REAL,";
@@ -124,6 +125,8 @@ public class GraphDatabase {
 
 
     public long insertrecords(String tableName, List<AccSample> accSampleList, Integer label) {
+
+        tableName = "sampledata";
         ContentValues initial = new ContentValues();
 
         for(int i=0; i<50; i++) {
@@ -139,10 +142,11 @@ public class GraphDatabase {
 
     public Cursor getData(String tableName)
     {
+        tableName = "sampledata";
         Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
         Cursor res = null;
         if(cursor.getCount()>0) {
-            res = db.rawQuery("select * from " + tableName + " order by time DESC limit 10", null);
+            res = db.rawQuery("select * from " + tableName, null);
         }
         return res;
     }
