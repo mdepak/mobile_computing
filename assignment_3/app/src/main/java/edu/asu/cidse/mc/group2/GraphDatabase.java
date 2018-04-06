@@ -32,7 +32,11 @@ public class GraphDatabase {
 
     private void updateCreateQuery(String tableName)
     {
-        create_query =  "create table if not exists " +tableName+ " (time INTEGER primary key, x REAL, y REAL, z REAL);";
+        create_query =  "create table if not exists " +tableName+ " (id INTEGER primary key, ";
+
+        for(int i=1; i<=50; i++) create_query += " x"+i +" REAL, y"+i +" REAL, z"+i +" REAL,";
+
+        create_query += " label INTEGER);";
     }
 
     private final Context context;
