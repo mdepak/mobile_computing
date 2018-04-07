@@ -273,7 +273,16 @@ public class MainActivityFragment extends Fragment {
         // OnClickListener for the upload button
         trainButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                List<Sample> accsa = fetchRecordsForTraining("asdfasf");
+                List<Sample> accSamples = fetchRecordsForTraining("asdfasf");
+                TrainSVM trainSVM = new TrainSVM();
+                String[] modelParams = new String[1];
+
+                try {
+                    trainSVM.run(accSamples,modelParams );
+                } catch (IOException e) {
+                    System.out.println("Exception ");
+                    e.printStackTrace();
+                }
             }
         });
 
