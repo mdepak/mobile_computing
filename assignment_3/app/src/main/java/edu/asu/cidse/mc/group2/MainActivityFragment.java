@@ -107,8 +107,6 @@ public class MainActivityFragment extends Fragment {
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(url).build();
 
-    Api api = retrofit.create(Api.class);
-
 
     private void resetGraph()
     {
@@ -207,73 +205,12 @@ public class MainActivityFragment extends Fragment {
         graphView.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
 
         Button runButton = rootView.findViewById(R.id.runBtn);
-        Button stopButton = rootView.findViewById(R.id.stopBtn);
-        Button downloadButton = rootView.findViewById(R.id.downloadBtn);
         Button trainButton = rootView.findViewById(R.id.trainBtn);
 
-        // OnClickListener for the download button
-        downloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Call<ResponseBody> call = api.downloadFile("group_2.db");
-
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                        Toast.makeText(getContext(), response.raw().toString(), Toast.LENGTH_SHORT).show();
-                        boolean write = writeResponseBodyToDisk(response.body());
-
-                        EditText id = ((EditText) rootView.findViewById(R.id.editText));
-                        String patientId = id.getText().toString();
-
-                        EditText Age = ((EditText) rootView.findViewById(R.id.editText4));
-                        String age = Age.getText().toString();
-
-                        EditText Name = ((EditText) rootView.findViewById(R.id.editText2));
-                        String name = Name.getText().toString();
-
-                        //RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
-                        //int selectedId = rg.getCheckedRadioButtonId();
-                        //RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
-                        //String sex = radioButton.getText().toString();
-                        String sex;
-                        boolean isValidInput = true;
-
-                        if (patientId.length() == 0) {
-                            id.setError("Id is required!");
-                            isValidInput = false;
-                        }
-
-                        if (age.length() == 0) {
-                            Age.setError("Age is required!");
-                            isValidInput = false;
-                        }
-
-                        if (name.length() == 0) {
-                            Name.setError("Name is required!");
-                            isValidInput = false;
-                        }
-
-                        String tableName = getTableName(patientId, age, name, "jkhagsdfkhj");
-                        table_name = tableName;
-                        if(isValidInput) {
-                                fetchRecordsFromDataBase(table_name);
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Toast.makeText(getContext(), "Download failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
         // OnClickListener for the upload button
         trainButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                List<Sample> accSamples = fetchRecordsForTraining("asdfasf");
+                List<Sample> accSamples = fetchRecordsForTraining("sampledata");
                 TrainSVM trainSVM = new TrainSVM();
                 String[] modelParams = new String[1];
 
@@ -295,43 +232,13 @@ public class MainActivityFragment extends Fragment {
              *
              */
             public void onClick(View view) {
-                EditText id = ((EditText) rootView.findViewById(R.id.editText));
-                String patientId = id.getText().toString();
-
-                EditText Age = ((EditText) rootView.findViewById(R.id.editText4));
-                String age = Age.getText().toString();
-
-                EditText Name = ((EditText) rootView.findViewById(R.id.editText2));
-                String name = Name.getText().toString();
-
-                //RadioGroup rg = (RadioGroup) rootView.findViewById(R.id.radioGroup);
-                //int selectedId = rg.getCheckedRadioButtonId();
-                //RadioButton radioButton = (RadioButton) rootView.findViewById(selectedId);
-                String sex;
-                //= radioButton.getText().toString();
 
                 Spinner sp = (Spinner)rootView.findViewById(R.id.spinner);
                 int spinner_pos = sp.getSelectedItemPosition();
                 Log.d(TAG, "Value of the Spinner chosen : "+ spinner_pos);
                 boolean isValidInput = true;
 
-                if (patientId.length() == 0) {
-                    id.setError("Id is required!");
-                    isValidInput = false;
-                }
-
-                if (age.length() == 0) {
-                    Age.setError("Age is required!");
-                    isValidInput = false;
-                }
-
-                if (name.length() == 0) {
-                    Name.setError("Name is required!");
-                    isValidInput = false;
-                }
-
-                String tableName = getTableName(patientId, age, name, "sdfasdf");
-                table_name = tableName;
+                table_name = "sampledata";
 
                 if (isValidInput && (updateThread == null || !updateThread.isAlive())) {
                     updateThread = new UpdateThread(graphView, valList);
@@ -340,7 +247,7 @@ public class MainActivityFragment extends Fragment {
 
                     Intent sensorService = new Intent(getContext(), SensorHandlerClass.class);
                     Bundle b = new Bundle();
-                    b.putString(TABLE_NAME, tableName);
+                    b.putString(TABLE_NAME, "sampledata");
                     b.putInt(LABEL, spinner_pos);
                     sensorService.putExtras(b);
                     getActivity().startService(sensorService);
@@ -348,31 +255,6 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-
-
-
-
-        // OnClickListener for the Stop button click
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            /**
-             *  Handles the stop button click
-             *
-             *  Stops the thread by signalling and clears the view
-             */
-            public void onClick(View view) {
-                if (updateThread != null) {
-                    Intent sensorService = new Intent(getContext(), SensorHandlerClass.class);
-                    getActivity().stopService(sensorService);
-
-                    valList = updateThread.getValues();
-
-                    updateThread.signalStop();
-                    updateThread = null;
-                    graphView.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
         return rootView;
     }
 
@@ -429,68 +311,6 @@ public class MainActivityFragment extends Fragment {
 
 
 
-
-
-    private boolean writeResponseBodyToDisk(ResponseBody body) {
-        try {
-            // todo change the file location/name according to your needs
-            File futureStudioIconFile = new File(path);
-
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-                byte[] fileReader = new byte[4096];
-
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
-
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-                    fileSizeDownloaded += read;
-
-                    Log.d("Down Error", "file download: " + fileSizeDownloaded + " of " + fileSize);
-                }
-
-                outputStream.flush();
-
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-
-    public interface  Api{
-        @Multipart
-        @POST("CSE535Spring18Folder/UploadToServer.php")
-        Call<ResponseBody> uploadFile(@Part MultipartBody.Part file, @Part("desc") RequestBody desc);
-
-        @GET("CSE535Spring18Folder/{filename}")
-        Call<ResponseBody> downloadFile(@Path("filename") String filename);
-
-    }
 
 
     @Override
