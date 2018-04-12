@@ -33,7 +33,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     Bundle b;
     GraphDatabase graphDatabase;
     String tableName;
-    static int ACCE_FILTER_DATA_MIN_TIME = 0;
+    static int ACCE_FILTER_DATA_MIN_TIME = 100;
     long lastSaved = System.currentTimeMillis();
     List<AccSample> accSamples;
     private static String TAG = "SensorHandlerClass";
@@ -55,53 +55,56 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         // TODO Auto-generated method stub
         Sensor mySensor = sensorEvent.sensor;
-        {
-        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            index++;
-            Log.d(TAG, "Sensor changed() method called...");
-            float accX = sensorEvent.values[0];
-            float accY = sensorEvent.values[1];
-            float accZ = sensorEvent.values[2];
-            Bundle bundle = new Bundle();
-            long time = new Date().getTime();
+        if ((System.currentTimeMillis() - lastSaved) > ACCE_FILTER_DATA_MIN_TIME)
+            {
+                lastSaved = System.currentTimeMillis();
+                if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    index++;
+                    Log.d(TAG, "Sensor changed() method called...");
+                    float accX = sensorEvent.values[0];
+                    float accY = sensorEvent.values[1];
+                    float accZ = sensorEvent.values[2];
+                    Bundle bundle = new Bundle();
+                    long time = new Date().getTime();
 
-            Log.d(TAG, "Time" + time + "\t acc X" + accX + "\tacc Y" + accY + "\t acc Z" + accZ);
+                    Log.d(TAG, "Time" + time + "\t acc X" + accX + "\tacc Y" + accY + "\t acc Z" + accZ);
 
-            //Insert the record to the database
-            if (graphDatabase != null) {
-                accSamples.add(new AccSample(accX,accY,accZ));
-                if(accSamples.size() == 50) {
-                    graphDatabase.insertrecords(tableName, accSamples,label);
-                     Log.d(TAG, "Insertion done...");
-                     bundle.putString(HIDE,"true");
-                    Intent updateUI = new Intent(INTENT_FILTER);
+                    //Insert the record to the database
+                    if (graphDatabase != null) {
+                        accSamples.add(new AccSample(accX, accY, accZ));
+                        if (accSamples.size() == 50) {
+                            graphDatabase.insertrecords(tableName, accSamples, label);
+                            Log.d(TAG, "Insertion done...");
+                            bundle.putString(HIDE, "true");
+                            Intent updateUI = new Intent(INTENT_FILTER);
 
-                    //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
-                    bundle.putFloat(ACC_X, accX);
-                    bundle.putFloat(ACC_Y, accY);
-                    bundle.putFloat(ACC_Z, accZ);
+                            //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
+                            bundle.putFloat(ACC_X, accX);
+                            bundle.putFloat(ACC_Y, accY);
+                            bundle.putFloat(ACC_Z, accZ);
 
-                    updateUI.putExtras(bundle);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
-                     stopSelf();
-                }
+                            updateUI.putExtras(bundle);
+                            LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
+                            stopSelf();
+                        }
 
-                //Send broadcast to the fragment for updating UI
-                Intent updateUI = new Intent(INTENT_FILTER);
+                        //Send broadcast to the fragment for updating UI
+                        Intent updateUI = new Intent(INTENT_FILTER);
 
-                //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
+                        //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
 
-                bundle.putFloat(ACC_X, accX);
-                bundle.putFloat(ACC_Y, accY);
-                bundle.putFloat(ACC_Z, accZ);
-                bundle.putString(HIDE,"false");
+                        bundle.putFloat(ACC_X, accX);
+                        bundle.putFloat(ACC_Y, accY);
+                        bundle.putFloat(ACC_Z, accZ);
+                        bundle.putString(HIDE, "false");
 
-                updateUI.putExtras(bundle);
-                //sendBroadcast(updateUI);
-                //sendBroadcast(updateUI);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
+                        updateUI.putExtras(bundle);
+                        //sendBroadcast(updateUI);
+                        //sendBroadcast(updateUI);
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
+                    }
             }
-        }}
+        }
     }
 
     @Override
@@ -112,9 +115,10 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         accelManage = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senseAccel = accelManage.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        accelManage.registerListener(this, senseAccel, SensorManager.SENSOR_DELAY_FASTEST);
+        accelManage.registerListener(this, senseAccel, SensorManager.SENSOR_DELAY_NORMAL);
 
 
     }

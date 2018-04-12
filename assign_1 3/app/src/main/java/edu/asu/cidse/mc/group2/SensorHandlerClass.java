@@ -30,7 +30,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     GraphDatabase graphDatabase;
     String tableName;
 
-    static int ACCE_FILTER_DATA_MIN_TIME = 0;
+    static int ACCE_FILTER_DATA_MIN_TIME = 100;
     long lastSaved = System.currentTimeMillis();
 
     private static String TAG = "SensorHandlerClass";
@@ -50,9 +50,9 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         // TODO Auto-generated method stub
         Sensor mySensor = sensorEvent.sensor;
-        if ((System.currentTimeMillis() - lastSaved) > ACCE_FILTER_DATA_MIN_TIME)
-        {
-            lastSaved = System.currentTimeMillis();
+        //if ((System.currentTimeMillis() - lastSaved) > ACCE_FILTER_DATA_MIN_TIME)
+        //{
+        //    lastSaved = System.currentTimeMillis();
         if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             index++;
             Log.d(TAG, "Sensor changed() method called...");
@@ -85,7 +85,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
             }
         }}
-    }
+  //  }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

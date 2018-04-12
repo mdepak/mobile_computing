@@ -115,7 +115,7 @@ public class TrainSVM {
         param.weight_label = new int[0];
         param.weight = new double[0];
         cross_validation = 1;
-        nr_fold = 10;
+        nr_fold = 3;
 
         svm.svm_set_print_string_function(svm_print_null);
 
