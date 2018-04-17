@@ -26,6 +26,9 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -258,6 +261,7 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+
     private List<Sample> fetchRecordsForTraining(String tableName)
     {
 
@@ -278,6 +282,43 @@ public class MainActivityFragment extends Fragment {
                 }
                 Sample sample = new Sample(accSampleList, cursor.getInt(cursor.getColumnIndex("label")));
                 sampleList.add(sample);
+            }
+        }
+        graphDatabase.close();
+        return sampleList;
+    }
+
+
+    public List fetchRecordsForVisualization(String tableName) throws JSONException {
+
+        List sampleList = new ArrayList<>();
+        GraphDatabase graphDatabase = new GraphDatabase(getContext(), tableName);
+        graphDatabase.open();
+        Cursor cursor = graphDatabase.getData(tableName);
+
+
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+
+
+                List accSampleList = new ArrayList<>();
+                for (int i = 0; i < 50; i++) {
+                    float x = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.X + i));
+                    float y = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Y + i));
+                    float z = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Z + i));
+                    int label = cursor.getColumnIndex("label");
+
+                    JSONObject point = new JSONObject();
+
+                    point.put("x", x);
+                    point.put("y", y);
+                    point.put("z", z);
+                    point.put("c", label);
+
+                    accSampleList.add(point);
+                }
+                sampleList.add(accSampleList);
             }
         }
         graphDatabase.close();

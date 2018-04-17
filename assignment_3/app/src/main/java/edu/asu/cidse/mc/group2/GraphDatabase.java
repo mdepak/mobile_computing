@@ -12,7 +12,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static edu.asu.cidse.mc.group2.MainActivityFragment.getExternalStorageDirectory;
@@ -73,9 +77,15 @@ public class GraphDatabase {
 
         AssignmentDatabaseHelper(Context ctx) {
 
+            //String actualPath = " /mnt/sdcard/ext_sd"+ File.separator + "Android/Data/CSE535_ASSIGNMENT2"+ File.separator + DBNAME;
+
             super(ctx, getExternalStorageDirectory()
                     + File.separator + "Android/Data/CSE535_ASSIGNMENT2"
                     + File.separator + DBNAME, null, version);
+
+            /*super(ctx, " /mnt/sdcard/ext_sd"+ File.separator + "Android/Data/CSE535_ASSIGNMENT2"
+                    + File.separator + DBNAME, null, version);
+*/
             //super(ctx, DBNAME, null, version);
         }
 
@@ -150,4 +160,48 @@ public class GraphDatabase {
         }
         return res;
     }
+
+
+    private static float round(float val)
+    {
+        return (float) (Math.round(val* 100.0)/100.0);
+    }
+
+
+    public static List fetchRecordsForVisualization(String tableName, Context context) throws JSONException {
+
+        List sampleList = new ArrayList<>();
+        GraphDatabase graphDatabase = new GraphDatabase(context, tableName);
+        graphDatabase.open();
+        Cursor cursor = graphDatabase.getData(tableName);
+
+
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+
+
+                List accSampleList = new ArrayList<>();
+                for (int i = 0; i < 50; i++) {
+                    float x = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.X + i));
+                    float y = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Y + i));
+                    float z = cursor.getFloat(cursor.getColumnIndex(GraphDatabase.Z + i));
+                    int label = cursor.getInt(cursor.getColumnIndex("label"));
+
+                    JSONObject point = new JSONObject();
+
+                    point.put("x", round(x));
+                    point.put("y", round(y));
+                    point.put("z", round(z));
+                    point.put("c", label);
+
+                    accSampleList.add(point);
+                }
+                sampleList.add(accSampleList);
+            }
+        }
+        graphDatabase.close();
+        return sampleList;
+    }
+
 }
