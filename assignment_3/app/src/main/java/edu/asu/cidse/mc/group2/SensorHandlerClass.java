@@ -12,15 +12,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import libsvm.svm;
+import libsvm.svm_model;
+import libsvm.svm_node;
+
+import static edu.asu.cidse.mc.group2.MainActivityFragment.INSERT;
 import static edu.asu.cidse.mc.group2.MainActivityFragment.LABEL;
 import static edu.asu.cidse.mc.group2.MainActivityFragment.TABLE_NAME;
 
@@ -43,6 +52,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     public static final String ACC_Z = "z";
     public static final String HIDE = "hide";
     private int label =-1;
+    Boolean test = false;
 
     @Override
     public void onDestroy() {
@@ -73,19 +83,41 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
                     if (graphDatabase != null) {
                         accSamples.add(new AccSample(accX, accY, accZ));
                         if (accSamples.size() == 50) {
-                            graphDatabase.insertrecords(tableName, accSamples, label);
-                            Log.d(TAG, "Insertion done...");
-                            bundle.putString(HIDE, "true");
-                            Intent updateUI = new Intent(INTENT_FILTER);
+                            if(test == true) {
+                                graphDatabase.insertrecords(tableName, accSamples, label);
+                                Log.d(TAG, "Insertion done...");
+                                bundle.putString(HIDE, "true");
+                                Intent updateUI = new Intent(INTENT_FILTER);
 
-                            //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
-                            bundle.putFloat(ACC_X, accX);
-                            bundle.putFloat(ACC_Y, accY);
-                            bundle.putFloat(ACC_Z, accZ);
+                                //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
+                                bundle.putFloat(ACC_X, accX);
+                                bundle.putFloat(ACC_Y, accY);
+                                bundle.putFloat(ACC_Z, accZ);
 
-                            updateUI.putExtras(bundle);
-                            LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
-                            stopSelf();
+                                updateUI.putExtras(bundle);
+                                LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
+                                stopSelf();
+                            }
+                            else{
+                                try {
+                                    bundle.putString(HIDE, "true");
+                                    Intent updateUI = new Intent(INTENT_FILTER);
+
+                                    //updateUI.addCategory(Intent.CATEGORY_DEFAULT);
+                                    bundle.putFloat(ACC_X, accX);
+                                    bundle.putFloat(ACC_Y, accY);
+                                    bundle.putFloat(ACC_Z, accZ);
+
+                                    updateUI.putExtras(bundle);
+                                    LocalBroadcastManager.getInstance(this).sendBroadcast(updateUI);
+                                    stopSelf();
+                                    svm_model model = svm.svm_load_model(Environment.getExternalStorageDirectory()+ File.separator + "test_svm.model");
+                                    predict(model,accSamples);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
                         }
 
                         //Send broadcast to the fragment for updating UI
@@ -137,6 +169,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
             b = intent.getExtras();
             tableName = b.getString(TABLE_NAME);
             label = b.getInt(LABEL);
+            test = b.getBoolean(INSERT);
 
             graphDatabase = new GraphDatabase(this, tableName);
             graphDatabase.open();
@@ -151,5 +184,38 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
     public IBinder onBind(Intent intent) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void predict(svm_model model, List<AccSample> accSampleList){
+
+        double v;
+
+        svm_node[] x = new svm_node[150];
+
+        int index = 0;
+        for (AccSample accSample : accSampleList) {
+            //Acc X
+            x[index] = new svm_node();
+            x[index].index = index;
+            x[index].value = accSample.getAccx();
+            index++;
+
+            //Acc Y
+            x[index] = new svm_node();
+            x[index].index = index;
+            x[index].value = accSample.getAccy();
+            index++;
+
+            //Acc Z
+            x[index] = new svm_node();
+            x[index].index = index;
+            x[index].value = accSample.getAccz();
+            index++;
+        }
+
+        v = svm.svm_predict(model,x);
+
+        Toast.makeText(this, v + " is the label",Toast.LENGTH_LONG).show();
+
     }
 }

@@ -91,6 +91,7 @@ public class MainActivityFragment extends Fragment {
 
     public static final String TABLE_NAME = "table_name";
     public static final String LABEL = "label";
+    public static final String INSERT = "insert";
 
     // Horizontal axis values
     String[] horAxis = {"2700", "2750", "2800", "2850", "2900", "2950", "3000", "3150", "3200"};
@@ -209,22 +210,8 @@ public class MainActivityFragment extends Fragment {
 
         Button runButton = rootView.findViewById(R.id.runBtn);
         Button trainButton = rootView.findViewById(R.id.trainBtn);
+        Button testButton = rootView.findViewById(R.id.testBtn);
 
-        // OnClickListener for the upload button
-        trainButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                List<Sample> accSamples = fetchRecordsForTraining("sampledata");
-                TrainSVM trainSVM = new TrainSVM();
-                String[] modelParams = new String[1];
-
-                try {
-                    trainSVM.run(accSamples,modelParams );
-                } catch (IOException e) {
-                    System.out.println("Exception ");
-                    e.printStackTrace();
-                }
-            }
-        });
 
         // OnClickListener for the run button click
         runButton.setOnClickListener(new View.OnClickListener() {
@@ -252,6 +239,49 @@ public class MainActivityFragment extends Fragment {
                     Bundle b = new Bundle();
                     b.putString(TABLE_NAME, "sampledata");
                     b.putInt(LABEL, spinner_pos);
+                    b.putBoolean(INSERT,true);
+                    sensorService.putExtras(b);
+                    getActivity().startService(sensorService);
+                }
+            }
+        });
+
+        // OnClickListener for the train button click
+        trainButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                List<Sample> accSamples = fetchRecordsForTraining("sampledata");
+                TrainSVM trainSVM = new TrainSVM(getContext());
+                String[] modelParams = new String[1];
+
+                try {
+                    trainSVM.run(accSamples,modelParams );
+                } catch (IOException e) {
+                    System.out.println("Exception ");
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // OnClickListener for the Test button click
+        testButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                Spinner sp = (Spinner)rootView.findViewById(R.id.spinner);
+                int spinner_pos = sp.getSelectedItemPosition();
+                Log.d(TAG, "Value of the Spinner chosen : "+ spinner_pos);
+                boolean isValidInput = true;
+
+                table_name = "sampledata";
+
+                if (isValidInput && (updateThread == null || !updateThread.isAlive())) {
+                    updateThread = new UpdateThread(graphView, valList);
+                    //updateThread.start();
+                    graphView.setVisibility(View.VISIBLE);
+
+                    Intent sensorService = new Intent(getContext(), SensorHandlerClass.class);
+                    Bundle b = new Bundle();
+                    b.putString(TABLE_NAME, "sampledata");
+                    b.putInt(LABEL, spinner_pos);
+                    b.putBoolean(INSERT,false);
                     sensorService.putExtras(b);
                     getActivity().startService(sensorService);
                 }
@@ -262,7 +292,7 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    private List<Sample> fetchRecordsForTraining(String tableName)
+    public List<Sample> fetchRecordsForTraining(String tableName)
     {
 
         List<Sample> sampleList = new ArrayList<>();

@@ -1,7 +1,9 @@
 package edu.asu.cidse.mc.group2;
 
 
+import android.content.Context;
 import android.os.Environment;
+import android.widget.Toast;
 
 import java.io.*;
 import java.util.*;
@@ -23,11 +25,15 @@ public class TrainSVM {
     private String error_msg;
     private int cross_validation;
     private int nr_fold;
-
+    private Context context;
     private static svm_print_interface svm_print_null = new svm_print_interface() {
         public void print(String s) {
         }
     };
+
+    public TrainSVM(Context con){
+        context = con;
+    }
 
     private static void exit_with_help() {
         System.out.print(
@@ -91,6 +97,8 @@ public class TrainSVM {
             for (i = 0; i < prob.l; i++)
                 if (target[i] == prob.y[i])
                     ++total_correct;
+            Toast.makeText(context, "Cross Validation Accuracy = " + 100.0 * total_correct / prob.l + "%\n",
+                    Toast.LENGTH_LONG).show();
             System.out.print("Cross Validation Accuracy = " + 100.0 * total_correct / prob.l + "%\n");
         }
     }
@@ -136,12 +144,13 @@ public class TrainSVM {
 
         if (cross_validation != 0) {
             do_cross_validation();
-        } else {
             model = svm.svm_train(prob, param);
             svm.svm_save_model(model_file_name, model);
+        } else {
+
         }
     }
-
+/*
     public void main(List<Sample> sampleList) throws IOException {
         TrainSVM t = new TrainSVM();
         String[] arg = new String[0];
@@ -149,6 +158,7 @@ public class TrainSVM {
 
         t.run(sampleList, arg);
     }
+*/
 
     private static double atof(String s) {
         double d = Double.valueOf(s).doubleValue();
@@ -195,13 +205,13 @@ public class TrainSVM {
                 //Acc Y
                 x[index] = new svm_node();
                 x[index].index = index;
-                x[index].value = accSample.getAccx();
+                x[index].value = accSample.getAccy();
                 index++;
 
                 //Acc Z
                 x[index] = new svm_node();
                 x[index].index = index;
-                x[index].value = accSample.getAccx();
+                x[index].value = accSample.getAccz();
                 index++;
             }
             prob.x[i] = x;

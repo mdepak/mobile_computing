@@ -30,23 +30,34 @@
         android:id="@+id/runBtn"
         android:layout_width="80dp"
         android:layout_height="40dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:background="@android:color/holo_green_light"
         android:text="Run"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteX="232dp" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
     <Button
         android:id="@+id/trainBtn"
-        android:layout_width="80dp"
+        android:layout_width="82dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:background="@android:color/holo_blue_light"
         android:text="Train"
-        app:layout_constraintEnd_toStartOf="@+id/runBtn"
+        app:layout_constraintStart_toEndOf="@+id/runBtn"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+
+
+    <Button
+        android:id="@+id/testBtn"
+        android:layout_width="82dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorAccent"
+        android:text="Test"
+        app:layout_constraintStart_toEndOf="@+id/trainBtn"
         app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
     <RelativeLayout
