@@ -1,3 +1,5 @@
+
+
 var plotGraph = function(traces) {
 	var graphDiv = 'graph';
 	Plotly.purge(graphDiv);
@@ -5,8 +7,12 @@ var plotGraph = function(traces) {
 	var legendLabels = ['Run', 'Walk', 'Jump']
 	var plotData = [];
 	traces.forEach(function(trace, i) {
+		var label = i;
+		console.log("label "+ label);
+		var labColor = colors[trace['c'][0]]
+		console.log("color :" + labColor);
 		plotData.push({
-			name: legendLabels[i],
+			name: legendLabels[trace['c'][0]],
 			type: 'scatter3d',
 			mode: 'lines+markers',
 			x: trace['x'],
@@ -14,7 +20,7 @@ var plotGraph = function(traces) {
 			z: trace['z'],
 			line: {
 				width: 5,
-				color: colors[i]
+				color: labColor
 			},
 			marker: {
 				size: 3.5,
@@ -37,8 +43,6 @@ var parseData = function(traces, data, selectedPlots) {
 
 	var colors = ['red', 'blue', 'green'];
 	var x, y, z, c;
-	console.log("Type of data --")
-	console.log(typeof data)
 	data.forEach(function(dataEl) {
 		x = [];
 		y = [];
@@ -46,8 +50,7 @@ var parseData = function(traces, data, selectedPlots) {
 		c = [];
 
 		dataEl.forEach(function(el) {
-			if (selectedPlots.includes(el['c']))
-			 {
+			if (selectedPlots.includes(el['c'])) {
 				x.push(el['x']);
 				y.push(el['y']);
 				z.push(el['z']);
@@ -71,11 +74,8 @@ $(function() {
 
     $("#data").text("data:" + d);
 
-	var data = JSON.parse(Android.getData());
-	console.log("Inside javascript")
-	console.log("Data obtained - :\n" +data)
+    var data = JSON.parse(Android.getData());
 
-    window.print('Data fetched from java code')
 	traces = [];
 
 	// 0 = run, 1 = walk, 2 = jump
@@ -95,17 +95,9 @@ $(function() {
 			}
 		}
 		traces = [];
-        parseData(traces, data, selectedPlots);
+		parseData(traces, data, selectedPlots);
 		plotGraph(traces);
 	});
-
-
-    	/*selectedPlots = JSON.parse('[0, 1, 2]');
-        console.log("selectedpoints type")
-		console.log(typeof selectedPlots)
-		console.log(selectedPlots)
-          */
-
 
 	parseData(traces, data, selectedPlots);
 	plotGraph(traces);
