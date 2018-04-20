@@ -28,12 +28,14 @@
 
     <Button
         android:id="@+id/runBtn"
-        android:layout_width="80dp"
+        android:layout_width="82dp"
         android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/holo_green_light"
+        android:layout_marginTop="40dp"
+        android:background="#ff9933"
         android:text="Run"
+        app:layout_constraintEnd_toStartOf="@+id/trainBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
@@ -41,11 +43,11 @@
         android:id="@+id/trainBtn"
         android:layout_width="82dp"
         android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/holo_blue_light"
+        android:layout_marginEnd="52dp"
+        android:layout_marginTop="40dp"
+        android:background="@android:color/background_light"
         android:text="Train"
-        app:layout_constraintStart_toEndOf="@+id/runBtn"
+        app:layout_constraintEnd_toStartOf="@+id/testBtn"
         app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
 
@@ -53,31 +55,45 @@
         android:id="@+id/testBtn"
         android:layout_width="82dp"
         android:layout_height="40dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/colorAccent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="40dp"
+        android:background="#138808"
         android:text="Test"
-        app:layout_constraintStart_toEndOf="@+id/trainBtn"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner" />
+
+    <Button
+        android:id="@+id/webBtn"
+        android:layout_width="82dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="36dp"
+        android:background="@color/colorPrimary"
+        android:text="View Graph"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trainBtn" />
 
     <RelativeLayout
         android:id="@+id/rel_layout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="187dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="8dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/runBtn" >
+        app:layout_constraintTop_toBottomOf="@+id/webBtn">
 
         <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
             android:layout_width="match_parent"
-            android:layout_height="200dip"
-            android:id="@+id/graph" />
+            android:layout_height="match_parent" />
 
     </RelativeLayout>
 

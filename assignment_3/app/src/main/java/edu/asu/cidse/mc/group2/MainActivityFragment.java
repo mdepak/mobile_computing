@@ -211,7 +211,7 @@ public class MainActivityFragment extends Fragment {
         Button runButton = rootView.findViewById(R.id.runBtn);
         Button trainButton = rootView.findViewById(R.id.trainBtn);
         Button testButton = rootView.findViewById(R.id.testBtn);
-
+        Button graphButton = rootView.findViewById(R.id.webBtn);
 
         // OnClickListener for the run button click
         runButton.setOnClickListener(new View.OnClickListener() {
@@ -285,6 +285,14 @@ public class MainActivityFragment extends Fragment {
                     sensorService.putExtras(b);
                     getActivity().startService(sensorService);
                 }
+            }
+        });
+
+        graphButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), WebViewActivity.class);
+                startActivity(intent);
             }
         });
 
