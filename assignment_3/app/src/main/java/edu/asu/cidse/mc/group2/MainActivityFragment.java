@@ -188,8 +188,6 @@ public class MainActivityFragment extends Fragment {
         xSeries.setTitle("Acc X");
         xSeries.setColor(Color.GREEN);
 
-
-
         ySeries = new LineGraphSeries<>(new DataPoint[] {});
         ySeries.setTitle("Acc Y");
         ySeries.setColor(Color.RED);

@@ -213,9 +213,22 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
             index++;
         }
 
-        v = svm.svm_predict(model,x);
+        int  predLabel = (int)svm.svm_predict(model,x);
+        String label = null;
+        switch (predLabel)
+        {
+            case 0:
+                label = "Walk";
+                break;
+            case 1:
+                label = "Jump";
+                break;
+            case 2:
+                label = "Run";
+                break;
+        }
 
-        Toast.makeText(this, v + " is the label",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, label + " is the label",Toast.LENGTH_LONG).show();
 
     }
 }

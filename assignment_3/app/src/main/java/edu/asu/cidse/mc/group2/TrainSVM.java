@@ -17,7 +17,7 @@ import libsvm.*;
 public class TrainSVM {
 
 
-    private svm_parameter param;        // set by parse_command_line
+    private svm_parameter param;        // set by pae_command_line
     private svm_problem prob;        // set by read_problem
     private svm_model model;
     private String input_file_name;        // set by parse_command_line
@@ -63,7 +63,7 @@ public class TrainSVM {
                         + "-b probability_estimates : whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n"
                         + "-wi weight : set the parameter C of class i to weight*C, for C-SVC (default 1)\n"
                         + "-v n : n-fold cross validation mode\n"
-                        + "-q : quiet mode (no outputs)\n"
+                         + "-q : quiet mode (no outputs)\n"
         );
         System.exit(1);
     }
@@ -129,7 +129,7 @@ public class TrainSVM {
 
         model_file_name = Environment.getExternalStorageDirectory()+File.separator + "test_svm.model";
 
-
+        Toast.makeText(context, "SVM Parameters : Kernel: RBF,Type: C_SVC, gamma: 0.006, Cross validation : 3- fold, slack epsilon :1e-3 ", Toast.LENGTH_LONG).show();
     }
 
     public void run(List<Sample> trainSample, String argv[]) throws IOException {
@@ -143,6 +143,7 @@ public class TrainSVM {
         }
 
         if (cross_validation != 0) {
+
             do_cross_validation();
             model = svm.svm_train(prob, param);
             svm.svm_save_model(model_file_name, model);

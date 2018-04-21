@@ -1,11 +1,12 @@
 
-
 var plotGraph = function(traces) {
 	var graphDiv = 'graph';
 	Plotly.purge(graphDiv);
-	var colors = ['rgb(255,153,51)', 'blue', 'rgb(19,136,8)'];
-	var legendLabels = ['Run', 'Walk', 'Jump']
+
+	var colors = ['rgb(255,153,51)', 'grey', 'rgb(19,136,8)'];
+	var legendLabels = ['Walk', 'Jump', 'Run']
 	var plotData = [];
+
 	traces.forEach(function(trace, i) {
 		var label = i;
 		console.log("label "+ label);
@@ -39,7 +40,7 @@ var plotGraph = function(traces) {
 	Plotly.plot(graphDiv, plotData, layout);
 };
 
-var parseData = function(traces, data, selectedPlots) {
+var parseData = function(traces, data, selectedLabels) {
 
 	var colors = ['red', 'blue', 'green'];
 	var x, y, z, c;
@@ -50,7 +51,7 @@ var parseData = function(traces, data, selectedPlots) {
 		c = [];
 
 		dataEl.forEach(function(el) {
-			if (selectedPlots.includes(el['c'])) {
+			if (selectedLabels.includes(el['c'])) {
 				x.push(el['x']);
 				y.push(el['y']);
 				z.push(el['z']);
@@ -77,28 +78,26 @@ $(function() {
     var data = JSON.parse(Android.getData());
 
 	traces = [];
-
-	// 0 = run, 1 = walk, 2 = jump
-	var selectedPlots = [0, 1, 2];
+	var selectedLabels = [0, 1, 2];
 
 	$('.chart-control').on('change', function(event) {
 		var $el = $(this);
 		var val = parseInt($el.val());
 
 		if ($el.prop('checked') == true) {
-			if (!selectedPlots.includes(val)) {
-				selectedPlots.push(val);
+			if (!selectedLabels.includes(val)) {
+				selectedLabels.push(val);
 			}
 		} else {
-			if (selectedPlots.includes(val)) {
-				selectedPlots.splice(selectedPlots.indexOf(val), 1);
+			if (selectedLabels.includes(val)) {
+				selectedLabels.splice(selectedLabels.indexOf(val), 1);
 			}
 		}
 		traces = [];
-		parseData(traces, data, selectedPlots);
+		parseData(traces, data, selectedLabels);
 		plotGraph(traces);
 	});
 
-	parseData(traces, data, selectedPlots);
+	parseData(traces, data, selectedLabels);
 	plotGraph(traces);
 });
