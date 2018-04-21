@@ -150,7 +150,7 @@ public class SensorHandlerClass extends Service implements SensorEventListener {
         super.onCreate();
         accelManage = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senseAccel = accelManage.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        accelManage.registerListener(this, senseAccel, SensorManager.SENSOR_DELAY_NORMAL);
+        accelManage.registerListener(this, senseAccel, SensorManager.SENSOR_DELAY_FASTEST);
 
 
     }

@@ -3,7 +3,7 @@
 var plotGraph = function(traces) {
 	var graphDiv = 'graph';
 	Plotly.purge(graphDiv);
-	var colors = ['red', 'blue', 'green'];
+	var colors = ['rgb(255,153,51)', 'blue', 'rgb(19,136,8)'];
 	var legendLabels = ['Run', 'Walk', 'Jump']
 	var plotData = [];
 	traces.forEach(function(trace, i) {
@@ -25,7 +25,7 @@ var plotGraph = function(traces) {
 			marker: {
 				size: 3.5,
 				color: trace['c'],
-				colorscale: "Greens",
+				colorscale: "rgb(100,100,100)",
 				cmin: -20,
 				cmax: 50
 			}
