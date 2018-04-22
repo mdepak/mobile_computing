@@ -3,10 +3,10 @@ clear all;close all;clc;
 
 %% load example data
 % load image
-im = double(imread('../data/101087.jpg'))/255;
+im = double(imread('/Users/vinoth/Downloads/BSR/grouping/data/101087.jpg'))/255;
 
 % load gPb
-load('../data/101087_ucm2.mat');
+load('/Users/vinoth/Downloads/BSR/grouping/data/101087_ucm2.mat');
 [txb,tyb]=size(ucm2);
 
 % load seeds 

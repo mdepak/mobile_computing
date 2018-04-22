@@ -1,10 +1,10 @@
 #flex -P__cfl_ -s -o$@ $<
 
-CXX = g++ -g -O3 -Wall
+#CXX = g++ -g -O3 -Wall
 #specify 64-bit architecture (for macos)
-#CXX = g++ -g -O3 -Wall -arch x86_64
-IFLAGS = -Iutil -Igroup -Ipartition 
-LFLAGS = -lm -ljpeg
+CXX = g++ -g -O3 -Wall -arch x86_64
+IFLAGS = -Iutil -Igroup -Ipartition -I/opt/local/include/
+LFLAGS = -lm -ljpeg -L/opt/local/lib
 F90FLAGS = -lgfortran -llapack -lblas 
 
 #######################################################################################333
@@ -28,7 +28,7 @@ all: buildW.mexglx
 #######################################################################################333
 
 buildW.mexglx: util/libutil.a
-	matlab -nodisplay -nojvm -r "mex buildW.cpp -Iutil smatrix.cc ic.cc affinity.cc util/libutil.a; exit"
+	matlab -nodisplay -nojvm -r "mex -v buildW.cpp -Iutil smatrix.cc ic.cc affinity.cc util/libutil.a; exit"
 
 #######################################################################################
 

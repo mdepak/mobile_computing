@@ -46,7 +46,7 @@ CXX_LDFLAGS := $(CXX_FLAGS) $(CXX_LINK)
 #############################################################################
 
 # matlab mex file compilation settings - matlab path
-MATLAB_PATH := /Applications/MATLAB_R2011a.app
+MATLAB_PATH := /Applications/MATLAB_R2017a.app
 #MATLAB_PATH := /usr/sww/pkg/matlab-r2008a
 
 # matlab mex file compilation settings - matlab architecture (32-bit machines)

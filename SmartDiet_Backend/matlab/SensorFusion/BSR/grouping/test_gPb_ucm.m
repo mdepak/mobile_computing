@@ -5,8 +5,8 @@ addpath(fullfile(pwd,'lib'));
 %% 1. compute globalPb on a small image to test mex files
 clear all; close all; clc;
 
-imgFile = 'data/101087_small.jpg';
-outFile = 'data/101087_small_gPb.mat';
+imgFile = '/Users/vinoth/Downloads/BSR/grouping/data/101087.jpg';
+outFile = '/Users/vinoth/Downloads/BSR/grouping/data/101087_gPb.mat';
 
 gPb_orient = globalPb(imgFile, outFile);
 delete(outFile);
