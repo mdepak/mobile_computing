@@ -9,44 +9,80 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <Button
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="40dp"
         android:id="@+id/normalBtn"
-        android:text="Normal Image"/>
-
-    <Button
         android:layout_width="110dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="250dp"
-        android:layout_marginTop="40dp"
-        android:id="@+id/thermalBtn"
-        android:text="Thermal Image"/>
-
-    <Button
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="420dp"
-        android:id="@+id/segmentBtn"
-        android:text="Segmented Image"/>
-
-    <Button
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="250dp"
-        android:layout_marginTop="420dp"
-        android:id="@+id/startBtn"
-        android:text="Start"/>
-
-    <ImageView
-        android:id="@+id/imgView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true">
-    </ImageView>
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="11dp"
+        android:text="Normal Image" />
+
+    <TextView
+        android:id="@+id/pathView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="89dp"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/pathView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="127dp"
+        android:text="" />
+
+    <Button
+        android:id="@+id/thermalBtn"
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/normalBtn"
+        android:layout_marginEnd="24dp"
+        android:text="Thermal Image" />
+
+    <Button
+        android:id="@+id/segmentBtn"
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/normalBtn"
+        android:layout_marginBottom="96dp"
+        android:text="Segmented Image" />
+
+    <Button
+        android:id="@+id/startBtn"
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/thermalBtn"
+        android:layout_alignTop="@+id/segmentBtn"
+        android:text="Start" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="234dp"
+        android:layout_height="179dp"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text3"
+        android:visibility="gone"
+        android:text="Choose a food from the drop down list for which you want to get the information..!"/>
+
+    <Spinner
+        android:id="@+id/items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="13dp" />
+
 
 
 </RelativeLayout>

@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 
+import static java.lang.Thread.sleep;
+
 public class MainActivity extends AppCompatActivity {
 
     String url = "http://impact.asu.edu/";
@@ -37,9 +41,17 @@ public class MainActivity extends AppCompatActivity {
 
     Api api = retrofit.create(Api.class);
 
+    ViewPager viewpager;
+    Button normalButton;
+    Button thermalButton;
+    Button segmentButton;
+    Button startButton;
+    TextView textview1;
+    TextView textview2;
+
+
     ArrayList<Uri> images = new ArrayList<>();
-    ImageView imageView;
-    private String imagepath=null;
+    ArrayList<String> imagepath= new ArrayList<>();
 
     public interface  Api{
         @Multipart
@@ -75,13 +87,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        viewpager = findViewById(R.id.viewPager);
 
-        imageView = (ImageView) findViewById(R.id.imgView);
+        normalButton = findViewById(R.id.normalBtn);
+        thermalButton = findViewById(R.id.thermalBtn);
+        segmentButton = findViewById(R.id.segmentBtn);
+        startButton = findViewById(R.id.startBtn);
+        textview1 = findViewById(R.id.pathView1);
+        textview2 = findViewById(R.id.pathView2);
 
-        Button normalButton = findViewById(R.id.normalBtn);
-        Button thermalButton = findViewById(R.id.thermalBtn);
-        Button segmentButton = findViewById(R.id.segmentBtn);
-        Button startButton = findViewById(R.id.startBtn);
 
         normalButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,21 +104,70 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(gallery, 1);
             }
         });
+
+        thermalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gallery = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(gallery, 2);
+            }
+        });
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    sleep(5000);
+                    Toast.makeText(MainActivity.this, "Segmentation is done..!!! ", Toast.LENGTH_LONG).show();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        segmentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+
+
+
+
     }
 
-
+    ///sdcard/Android/Data/CSE535_ASSIGNMENT2/group_2.db
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            // Get the Image from data
-            Uri uri = data.getData();
-            images.add(uri);
-            imageView.setImageURI(uri);
-            //ViewPagerAdaptor viewPagerAdapter = new ViewPagerAdaptor(this, images);
-            //viewPager.setAdapter(viewPagerAdapter);
-            ///sdcard/Android/Data/CSE535_ASSIGNMENT2/group_2.db
+        if (requestCode == 1)
+        {
+            Uri mImageUri=data.getData();
 
+            String path = getPath(mImageUri);
+            Log.d("Location1", "Pic's location " + path);
+            images.add(mImageUri);
+            imagepath.add(path);
+            textview1.setText(path);
+            ViewPagerAdaptor viewPagerAdapter = new ViewPagerAdaptor(this, images);
+            viewpager.setAdapter(viewPagerAdapter);
         }
+
+        else if(requestCode == 2)
+        {
+            Uri mImageUri=data.getData();
+            String path = getPath(mImageUri);
+            Log.d("Location2", "Pic's location " + path);
+            images.add(mImageUri);
+            imagepath.add(path);
+            textview2.setText(path);
+            ViewPagerAdaptor viewPagerAdapter = new ViewPagerAdaptor(this, images);
+            viewpager.setAdapter(viewPagerAdapter);
+        }
+
+        Log.d("Location main", "Pic's location " + imagepath);
+
     }
 
 
@@ -112,11 +175,11 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = { MediaStore.Images.Media.DATA };
         @Deprecated
         Cursor cursor = managedQuery(uri, projection, null, null, null);
+        //Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
-
 
 
 
