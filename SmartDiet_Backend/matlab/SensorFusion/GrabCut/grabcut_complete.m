@@ -5,9 +5,9 @@ out_file = "/Users/student/Downloads/SensorFusion/BSR/grouping/data/101087_grabc
 
 
 %%{
-original_image = "/Users/student/Downloads/group_21/2/20_color.jpg";
-polygon_file = "/Users/student/Downloads/group_21/2/20_grey_rof.jpg";
-out_file = "/Users/student/Downloads/group_21/2/20_grey_grabcut.jpg";
+original_image = "/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/101087.jpg";
+polygon_file = "/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/101087_seg.jpg";
+out_file = "/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/101087_grabcut.jpg";
 %}
 
 %{
