@@ -103,11 +103,15 @@ public class MainActivity extends AppCompatActivity {
         textview2 = findViewById(R.id.pathView2);
         textview3 = findViewById(R.id.text3);
         spinner = findViewById(R.id.items);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(!adapterView.getItemAtPosition(i).toString().equals("Choose.."))
-                    Toast.makeText(MainActivity.this, adapterView.getItemAtPosition(i) + " ", Toast.LENGTH_SHORT).show();
+                if(!adapterView.getItemAtPosition(i).toString().equals("Choose..")) {
+                    Intent segment = new Intent(MainActivity.this, ChartActivity.class);
+                    segment.putExtra("Food Name", adapterView.getItemAtPosition(i).toString());
+                    startActivity(segment);
+                }
             }
 
             @Override
