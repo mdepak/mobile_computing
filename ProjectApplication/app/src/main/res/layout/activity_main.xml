@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    tools:context="com.example.ash2277.projectapplication.MainActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="40dp"
+        android:id="@+id/normalBtn"
+        android:text="Normal Image"/>
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="250dp"
+        android:layout_marginTop="40dp"
+        android:id="@+id/thermalBtn"
+        android:text="Thermal Image"/>
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="420dp"
+        android:id="@+id/segmentBtn"
+        android:text="Segmented Image"/>
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="250dp"
+        android:layout_marginTop="420dp"
+        android:id="@+id/startBtn"
+        android:text="Start"/>
+
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true">
+    </ImageView>
+
+
+</RelativeLayout>
+

@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -265,6 +267,7 @@ public class MainActivityFragment extends Fragment {
         // OnClickListener for the upload button
         uploadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                path = "/storage/emulated/0/Download/Avengers-Infinity-Wars-poster-780x1024.jpg";
                 File file = new File(path);
 
                 if(file.exists())
@@ -282,7 +285,7 @@ public class MainActivityFragment extends Fragment {
                 RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
                 MultipartBody.Part body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
                 String tableName = "tableName";
-                RequestBody descBody = RequestBody.create(MediaType.parse("text/plain"), tableName);
+                RequestBody descBody = RequestBody.create(MediaType.parse("image/*"), tableName);
 
                 Call<ResponseBody> call = api.uploadFile(body,descBody);
 
@@ -383,6 +386,7 @@ public class MainActivityFragment extends Fragment {
         });
         return rootView;
     }
+
 
     private void fetchRecordsFromDataBase(String tableName)
     {
