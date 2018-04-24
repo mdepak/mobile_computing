@@ -29,12 +29,11 @@ for i=1:size(unique(Labeled_ROF),1)-1
            extraROF(Label_IDX(k)) = 0;
        end
        extraROF = ProProcessROF(extraROF);
-       if size(find(extraROF == 0),1) < 3600
+        if size(find(extraROF == 0),1) < 3600
             extraROF = zeros(size(edge_ROF,1), size(edge_ROF,2));
             extraROF = extraROF + 1;
        else
            fprintf('There is the food portion which has the same color with the plate color\n');
        end
-       
     end
 end
