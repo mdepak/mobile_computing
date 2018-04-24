@@ -10,22 +10,17 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
+import java.util.ArrayList;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
@@ -42,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     Api api = retrofit.create(Api.class);
 
+    ArrayList<Uri> images = new ArrayList<>();
     ImageView imageView;
     private String imagepath=null;
 
@@ -56,12 +52,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 /*
-    <android.support.v4.view.ViewPager
-    android:id="@+id/viewPager"
-    android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:layout_alignParentStart="true"
-    android:layout_centerVertical="true">
+
 */
 
     @Override
@@ -103,47 +94,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            Uri selectedImageUri = data.getData();
-            imagepath = getPath(selectedImageUri);
+            // Get the Image from data
+            Uri uri = data.getData();
+            images.add(uri);
+            imageView.setImageURI(uri);
+            //ViewPagerAdaptor viewPagerAdapter = new ViewPagerAdaptor(this, images);
+            //viewPager.setAdapter(viewPagerAdapter);
             ///sdcard/Android/Data/CSE535_ASSIGNMENT2/group_2.db
-            File file = new File(imagepath);
 
-            if(file.exists())
-                Log.d("Deep", "File found in the SD card..");
-            else
-                Log.d("Deep", "File not found in the SD card..");
-
-
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-            httpClient.addInterceptor(logging);
-
-            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
-            MultipartBody.Part body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
-            String tableName = "tableName";
-            RequestBody descBody = RequestBody.create(MediaType.parse("text/plain"), tableName);
-
-            Call<ResponseBody> call = api.uploadFile(body,descBody);
-
-            call.enqueue(new Callback() {
-                @Override
-                public void onResponse(Call call, retrofit2.Response response) {
-                    Log.d("Upload", "File uploaded");
-                    Log.d("Response value", response.raw().toString());
-                }
-
-                @Override
-                public void onFailure(Call call, Throwable t) {
-                    Log.d("Upload", "File not uploaded");
-                }
-            });
-            imageView.setImageURI(selectedImageUri);
         }
-
     }
 
 
