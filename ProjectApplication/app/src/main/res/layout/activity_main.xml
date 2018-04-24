@@ -68,12 +68,6 @@
         android:layout_height="179dp"
         android:layout_centerInParent="true" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/text3"
-        android:visibility="gone"
-        android:text="Choose a food from the drop down list for which you want to get the information..!"/>
 
     <Spinner
         android:id="@+id/items"
@@ -81,8 +75,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="13dp" />
+        android:layout_marginBottom="13dp"
+        android:visibility="gone"
+        android:clickable="true"/>
 
+    <TextView
+        android:id="@+id/text3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="51dp"
+        android:text="Choose a food from the drop down list for which you want to get the information..!"
+        android:visibility="gone"/>
 
 
 </RelativeLayout>

@@ -13,7 +13,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,10 +51,13 @@ public class MainActivity extends AppCompatActivity {
     Button startButton;
     TextView textview1;
     TextView textview2;
-
+    TextView textview3;
+    Spinner spinner;
 
     ArrayList<Uri> images = new ArrayList<>();
     ArrayList<String> imagepath= new ArrayList<>();
+    ArrayList<String> itemNames = new ArrayList<>();
+
 
     public interface  Api{
         @Multipart
@@ -95,7 +101,20 @@ public class MainActivity extends AppCompatActivity {
         startButton = findViewById(R.id.startBtn);
         textview1 = findViewById(R.id.pathView1);
         textview2 = findViewById(R.id.pathView2);
+        textview3 = findViewById(R.id.text3);
+        spinner = findViewById(R.id.items);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(!adapterView.getItemAtPosition(i).toString().equals("Choose.."))
+                    Toast.makeText(MainActivity.this, adapterView.getItemAtPosition(i) + " ", Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Toast.makeText(MainActivity.this, "Nothing seleected", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         normalButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +137,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     sleep(5000);
-                    Toast.makeText(MainActivity.this, "Segmentation is done..!!! ", Toast.LENGTH_LONG).show();
+                    textview3.setVisibility(View.VISIBLE);
+                    itemNames.add("Choose..");
+                    itemNames.add("Fries");
+                    itemNames.add("Soup");
+                    itemNames.add("Rice");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                            android.R.layout.simple_spinner_item,itemNames);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(adapter);
+                    spinner.setVisibility(View.VISIBLE);
+                    Toast.makeText(MainActivity.this, "Segmentation is done..!!! ", Toast.LENGTH_SHORT).show();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -128,13 +157,11 @@ public class MainActivity extends AppCompatActivity {
         segmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent segment = new Intent(MainActivity.this, SegmentActivity.class);
+                segment.putExtra("Normal Image",imagepath.get(0));
+                startActivity(segment);
             }
         });
-
-
-
-
 
     }
 

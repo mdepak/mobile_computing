@@ -14,7 +14,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Segmented images"/>
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:text="Segmented images" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/segViewPager"
