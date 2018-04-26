@@ -8,7 +8,7 @@ clear all; close all; clc;
 inFile = '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/20_color.jpg';
 
 grey = '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/20_grey.jpg';
-imwrite(imresize(imread(grey), 0.25), grey);
+
 
 outFile = '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/20_color_gPb.mat';
 img = imread(inFile);

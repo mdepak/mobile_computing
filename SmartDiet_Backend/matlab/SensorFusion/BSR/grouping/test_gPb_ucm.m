@@ -5,8 +5,8 @@ addpath(fullfile(pwd,'lib'));
 %% 1. compute globalPb on a small image to test mex files
 clear all; close all; clc;
 
-imgFile = '/Users/vinoth/Downloads/BSR/grouping/data/101087.jpg';
-outFile = '/Users/vinoth/Downloads/BSR/grouping/data/101087_gPb.mat';
+imgFile = '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/20_color.jpg';
+outFile = '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/20_color_gPb.mat';
 
 gPb_orient = globalPb(imgFile, outFile);
 delete(outFile);
