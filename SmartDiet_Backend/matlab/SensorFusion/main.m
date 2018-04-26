@@ -27,15 +27,19 @@ for food = 1:40
         thermal_rof_file  = (strcat(temp_dir, "/", food+"_"+ img + "_thermal_rof.jpg"));
         bsr_rof_file  = char(strcat(temp_dir, "/", food+"_"+ img + "_bsr_rof.jpg"));
         
-        out_file_name = (strcat(data_dir, "/", food+"_"+ img + "_color_out_grab_thermal.jpg"));
+        
+        thermal_out_file_name = (strcat(data_dir, "/", food+"_"+ img + "_color_out_grab_thermal.jpg"));
+        segment_out_file_name = (strcat(data_dir, "/", food+"_"+ img + "_color_out_grab_seg.jpg"));
         
         get_ROF_file(grey_file_name,thermal_rof_file);
         
         addpath('./GrabCut/grabcut_complete');
-        performGrabCut(color_file_name,thermal_rof_file, out_file_name);
+        performGrabCut(color_file_name,thermal_rof_file, thermal_out_file_name);
         
         addpath('./BSR/grouping');
         BSR(color_file_name,bsr_rof_file)
+        
+        performGrabCut(color_file_name,bsr_rof_file, segment_out_file_name);
         
        if exist(char(color_file_name), 'file') == 2
            disp("File found")
