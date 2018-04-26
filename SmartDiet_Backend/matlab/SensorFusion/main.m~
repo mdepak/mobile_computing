@@ -1,5 +1,5 @@
-%reduce_image_sizes('/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data')
-process_files('/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data', '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_output', '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_temp');
+reduce_image_sizes('/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data')
+process_files('/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data')
 
 function get_ROF_file(thermal_image_file_path, output_file)
 thermal_image = imread(char(thermal_image_file_path));
@@ -19,13 +19,13 @@ function reduce_image_sizes(data_dir)
     end
 end
 
-function process_files(data_dir, out_dir, temp_dir)
+function process_files(data_dir)
 for food = 1:40
     for img = 1:20
-        color_file_name = char(strcat(data_dir, "/", food+"_"+ img + "_color.jpg"));
+        color_file_name = (strcat(data_dir, "/", food+"_"+ img + "_color.jpg"));
         grey_file_name = (strcat(data_dir, "/", food+"_"+ img + "_grey.jpg"));
-        thermal_rof_file  = (strcat(temp_dir, "/", food+"_"+ img + "_thermal_rof.jpg"));
-        bsr_rof_file  = char(strcat(temp_dir, "/", food+"_"+ img + "_bsr_rof.jpg"));
+        thermal_rof_file  = (strcat(data_dir, "/", food+"_"+ img + "_thermal_rof.jpg"));
+        bsr_rof_file  = (strcat(data_dir, "/", food+"_"+ img + "_bsr_rof.jpg"));
         
         out_file_name = (strcat(data_dir, "/", food+"_"+ img + "_color_out_grab_thermal.jpg"));
         
