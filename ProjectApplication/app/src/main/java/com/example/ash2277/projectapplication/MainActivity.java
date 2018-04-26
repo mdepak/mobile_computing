@@ -22,27 +22,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.http.GET;
-import retrofit2.http.Multipart;
-import retrofit2.http.POST;
-import retrofit2.http.Part;
-import retrofit2.http.Path;
-
 import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity {
 
-    String url = "http://impact.asu.edu/";
-
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(url).build();
-
-    Api api = retrofit.create(Api.class);
+    //https://api.nal.usda.gov/ndb/V2/reports?ndbno=01009&type=f&format=json&api_key=DEMO_KEY
 
     ViewPager viewpager;
     Button normalButton;
@@ -54,20 +38,11 @@ public class MainActivity extends AppCompatActivity {
     TextView textview3;
     Spinner spinner;
 
+    ArrayList<String> itemNbno = new ArrayList<>();
     ArrayList<Uri> images = new ArrayList<>();
     ArrayList<String> imagepath= new ArrayList<>();
     ArrayList<String> itemNames = new ArrayList<>();
 
-
-    public interface  Api{
-        @Multipart
-        @POST("CSE535Spring18Folder/UploadToServer.php")
-        Call<ResponseBody> uploadFile (@Part MultipartBody.Part file, @Part("desc") RequestBody desc);
-
-        @GET("CSE535Spring18Folder/{filename}")
-        Call<ResponseBody> downloadFile(@Path("filename") String filename);
-
-    }
 
 /*
 
@@ -110,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!adapterView.getItemAtPosition(i).toString().equals("Choose..")) {
                     Intent segment = new Intent(MainActivity.this, ChartActivity.class);
                     segment.putExtra("Food Name", adapterView.getItemAtPosition(i).toString());
+                    segment.putExtra("Food Nbno", itemNbno.get(i-1));
                     startActivity(segment);
                 }
             }
@@ -143,9 +119,12 @@ public class MainActivity extends AppCompatActivity {
                     sleep(5000);
                     textview3.setVisibility(View.VISIBLE);
                     itemNames.add("Choose..");
-                    itemNames.add("Fries");
                     itemNames.add("Soup");
-                    itemNames.add("Rice");
+                    itemNames.add("Bread");
+                    itemNames.add("Sausage");
+                    itemNbno.add("45045887");
+                    itemNbno.add("45173035");
+                    itemNbno.add("45194361");
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
                             android.R.layout.simple_spinner_item,itemNames);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -168,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     ///sdcard/Android/Data/CSE535_ASSIGNMENT2/group_2.db
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -211,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
-
 
 
 }

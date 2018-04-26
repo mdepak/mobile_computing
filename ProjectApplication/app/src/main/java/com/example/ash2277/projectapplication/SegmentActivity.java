@@ -18,6 +18,8 @@ public class SegmentActivity extends AppCompatActivity {
     ViewPager viewpager;
 
     ArrayList<Uri> images = new ArrayList<>();
+    ArrayList<String> image_path = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,10 @@ public class SegmentActivity extends AppCompatActivity {
         setContentView(R.layout.segmented_layout);
         imgview = findViewById(R.id.segImgView);
         viewpager = findViewById(R.id.segViewPager);
+
+        image_path.add("/storage/emulated/0/soup.jpg");
+        image_path.add("/storage/emulated/0/bread.bmp");
+        image_path.add("/storage/emulated/0/sauage.jpg");
 
         Intent seg = getIntent();
         String path = seg.getStringExtra("Normal Image");
@@ -37,7 +43,13 @@ public class SegmentActivity extends AppCompatActivity {
 
         }
 
-        //ViewPagerAdaptor viewPagerAdapter = new ViewPagerAdaptor(this, images);
-        //viewpager.setAdapter(viewPagerAdapter);
+        for(int i = 0;i<image_path.size(); i++)
+        {
+            images.add(Uri.fromFile(new File(image_path.get(i))));
+        }
+
+
+        ViewPagerAdaptor viewPagerAdapter = new ViewPagerAdaptor(this, images);
+        viewpager.setAdapter(viewPagerAdapter);
     }
 }

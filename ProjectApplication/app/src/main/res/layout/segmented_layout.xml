@@ -16,14 +16,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:text="Segmented images" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/segViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_width="234dp"
+        android:layout_height="179dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="26dp" />
 
 </RelativeLayout>
