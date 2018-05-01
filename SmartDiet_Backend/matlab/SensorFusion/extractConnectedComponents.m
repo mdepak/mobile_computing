@@ -16,7 +16,7 @@ for k = 1 : num
     for i = 1:3
         b(:, :, i) = uint8(image(:, :, i)) .* uint8(thisBlob);
     end
-    image_out_file = strcat(char(outdir),"/", "seg_"+k+"_", char(image_file_name));
+    image_out_file = strcat(char(outdir),"/", char(extractBetween(image_file_name,1,(strfind(image_file_name,".")-1))),"_comp_"+k+".jpg");
     imwrite(b, char(image_out_file));
     imshow(b);
 end
