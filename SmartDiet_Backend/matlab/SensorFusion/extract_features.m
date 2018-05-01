@@ -1,13 +1,9 @@
-
-image_file = '/Users/student/Downloads/group_21/2/20_grey_grabcut.jpg'
-
 image = imread(char(image_file));
 rgb_hist_feature = get_rgb_histogram(image);
 
 
 disp("Size of the rgb hist feature");
 disp(size(rgb_hist_feature));
-
 
 hog_features = extractHOGFeatures(image);
 
