@@ -1,7 +1,8 @@
 %reduce_image_sizes('/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data')
 %process_files('/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data', '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_output', '/Users/vinoth/codebase/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_temp');
-run_connected_components_extraction("/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_output","/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_comp_out", "_color_out_grab_thermal")
+%run_connected_components_extraction("/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_output","/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_comp_out", "_color_out_grab_thermal")
 
+constructDataSet("test_csv1.csv","/Users/student/Documents/Deepak/Mobile Computing/Git Repo/mobile_computing/SmartDiet_Backend/matlab/SensorFusion/data/mc_data_output","food_image_dataset.csv");
 
 function run_connected_components_extraction(input_file_dir,output_dir, image_name_format)
     for food = 1:40
@@ -12,6 +13,8 @@ function run_connected_components_extraction(input_file_dir,output_dir, image_na
     end
 
 end
+
+
 function get_ROF_file(thermal_image_file_path, output_file)
 thermal_image = imread(char(thermal_image_file_path));
 [Threshold, ROF] = extractROF(thermal_image,"");
